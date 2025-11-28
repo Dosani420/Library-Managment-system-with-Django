@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'sampleapp/new_style.css' %}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+
+<body style="text-align: center">
+    <center>
+        <h1>Login</h1>
+        <form method="post">
+            {{mes}}<br>
+            {% csrf_token %}
+            <label for="usn">username</label>
+            <input type="text" name="username" id="usn" placeholder="Enter your username" required>
+            <br>
+            <label for="pwd">Password</label>
+            <input type="password" name="loginpwd" id="pwd" placeholder="Enter Password" required>
+            <br>
+            <button type="submit" class="GFG">Login</button>
+        </form>
+        <a href="{% url 'signup' %}">Don't Have an Account?</a>
+    </center>
+</body>
+
+</html>

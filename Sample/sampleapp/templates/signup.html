@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - User Hub</title>
+    <link rel="stylesheet" href="{% static 'sampleapp/premium_style.css' %}">
+</head>
+
+<body>
+    <div class="auth-container">
+        <!-- Left Side: Form -->
+        <div class="auth-left">
+            <div class="auth-card" style="max-width: 500px;">
+                <div class="auth-header">
+                    <h1 class="auth-title">Create an account</h1>
+                    <p class="auth-subtitle">Start your 30-day free trial today.</p>
+                </div>
+
+                <form method="post" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    {% if mes %}
+                        <p style="color: red;">{{ mes }}</p>
+                    {% endif %}
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="fname">First Name</label>
+                            <input type="text" name="fname" id="fname" class="form-control" placeholder="John" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="lname">Last Name</label>
+                            <input type="text" name="lname" id="lname" class="form-control" placeholder="Doe" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="john@example.com"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="usn">Username</label>
+                        <input type="text" name="username" id="usn" class="form-control" placeholder="johndoe" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="password">Password</label>
+                            <input type="password" name="password" id="password" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="confirm">Confirm</label>
+                            <input type="password" name="confirm" id="confirm" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="gender" value="Male" style="accent-color: var(--primary);">
+                                Male
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="gender" value="Female" style="accent-color: var(--primary);">
+                                Female
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="role">Role</label>
+                        <select name="role" id="role" class="form-control" onchange="toggleInitialId()">
+                            <option value="member">Member</option>
+                            <option value="staff">Staff</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="initialIdGroup" style="display: none;">
+                        <label class="form-label" for="initial_id">Initial ID (OTP)</label>
+                        <input type="text" name="initial_id" id="initial_id" class="form-control"
+                            placeholder="Enter Staff OTP">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dob">Date of Birth</label>
+                        <input type="date" name="dob" id="dob" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create
+                        Account</button>
+
+                    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+                        Already have an account? <a href="{% url 'login' %}"
+                            style="color: var(--primary); font-weight: 600;">Log in</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Side: Art -->
+        <div class="auth-right">
+            <div class="auth-art-content">
+                <h2 class="auth-art-title">Join the community.</h2>
+                <p style="font-size: 1.1rem; opacity: 0.9;">Connect with millions of users worldwide and experience the
+                    difference.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleInitialId() {
+            const roleSelect = document.getElementById('role');
+            const initialIdGroup = document.getElementById('initialIdGroup');
+            if (roleSelect.value === 'staff') {
+                initialIdGroup.style.display = 'block';
+                document.getElementById('initial_id').required = true;
+            } else {
+                initialIdGroup.style.display = 'none';
+                document.getElementById('initial_id').required = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

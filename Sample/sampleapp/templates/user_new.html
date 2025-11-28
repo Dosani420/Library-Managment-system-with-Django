@@ -1,0 +1,119 @@
+{% extends "member_base.html" %}
+
+{% block title %}Books Management - Library Admin{% endblock title %}
+
+{% block body %}
+<div class="main-content">
+    <header class="dashboard-header">
+        <div>
+            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Books Management</h1>
+            <p style="color: var(--text-secondary);">Manage your library collection.</p>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <a href="{% url 'add_book' %}" class="btn btn-primary">
+                <span>+</span> Add New Book
+            </a>
+        </div>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">{{ books|length }}</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Total Books</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">📖</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">{{ total_borrowed|default:"0" }}</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Borrowed</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">🏷️</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">{{ categories_count|default:"0" }}</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Categories</div>
+            </div>
+        </div>
+    </div>
+
+    {% if mes %}
+    <div
+        style="padding: 1rem; background: rgba(99, 102, 241, 0.1); color: var(--primary); border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+        {{ mes }}
+    </div>
+    {% endif %}
+
+    <!-- Table -->
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Cover</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>ISBN</th>
+                    <th>Genre</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>
+                        {% if book.Image %}
+                        <img src="{{ book.Image.url }}" alt="{{ book.Title }}"
+                            style="width: 40px; height: 60px; object-fit: cover; border-radius: 4px;">
+                        {% else %}
+                        <div
+                            style="width: 40px; height: 60px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                            📚</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">{{ book.Title }}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">{{ book.Published_date|date:"Y" }}
+                        </div>
+                    </td>
+                    <td>{{ book.Author }}</td>
+                    <td><span style="font-family: monospace; font-size: 0.9rem;">{{ book.ISBN }}</span></td>
+                    <td>
+                        <span class="role-badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                            {{ book.Genre|title }}
+                        </span>
+                    </td>
+                    <td>${{ book.Price }}</td>
+                    <td>
+                        <span
+                            style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; color: var(--text-secondary);">
+                            <span
+                                style="width: 8px; height: 8px; background: var(--success); border-radius: 50%;"></span>
+                            Available
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{% url 'edit_book' book.id %}" class="btn btn-sm btn-secondary" title="Edit">✏️</a>
+                            <a href="{% url 'delete_book' book.id %}" class="btn btn-sm btn-danger" title="Delete"
+                                onclick="return confirm('Are you sure you want to delete this book?');">🗑️</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        No books found in the library.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock body %}

@@ -1,0 +1,353 @@
+from django.shortcuts import render,redirect,HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.auth import login,logout,authenticate
+from django.contrib import messages
+from .models import Staff,Member,Book,BorrowRecord
+from datetime import date, datetime, timedelta
+
+# Create your views here.
+
+def index(request):
+    return render(request, 'index.html')
+
+def _login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['loginpwd']
+        user = authenticate(request,username=username,password=password)
+        print(user)
+        if user is not None:
+            login(request,user)
+            request.session['user_id'] = user.id
+            print(user.id)
+            request.session['is_logged_in'] = True
+            
+            # Check if user is staff
+            if Staff.objects.filter(user=user).exists():
+                return redirect('/staff_dashboard/')
+            else:
+                return redirect('/home/')
+        else:
+            return render(request, 'login.html',{'mes':'Wrong password'})
+    elif request.session.get('is_logged_in'):
+        return redirect('/home/')
+    else:
+        return render(request,'login.html')
+
+def logout_user(request):
+    logout(request)
+    request.session.flush()
+    return redirect('/login/')
+
+def signup(request):
+    if request.session.get('is_logged_in'):
+        return redirect('/home/')
+    else:
+        return render(request, 'signup.html')
+
+def add_user(request):
+    if request.method == 'POST':
+        role = request.POST['role']
+        firstname = request.POST['fname']
+        lastname = request.POST['lname']
+        email = request.POST['email']
+        username = request.POST['username']
+        password = request.POST['password']
+        gender = request.POST['gender']
+        dob_str = request.POST['dob']
+        dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+        
+        user = User.objects.create_user(username,email,password)
+        user.first_name = firstname
+        user.last_name = lastname
+        user.save()
+
+        if role == 'staff':
+            otp = request.POST['initial_id']
+            if otp == '1314':
+                staff = Staff.objects.create(user=user,gender=gender,
+                                        date_of_birth=dob)
+
+                staff.save()
+            else:
+                return render(request, 'signup.html',{'mes':'Wrong OTP'})
+
+        else:
+            member = Member.objects.create(user=user,gender=gender,
+                                    date_of_birth=dob)
+
+            member.save()
+
+        return redirect('/login/')
+
+def user(request):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        
+        # Redirect staff to staff dashboard
+        if Staff.objects.filter(user=user).exists():
+            return redirect('/staff_dashboard/')
+        
+        
+        context = {
+            'user': user,
+            'borrowed_books_count': 0,
+            'returned_books_count': 0,
+            'total_fines': 0,
+            'recent_books': []
+        }
+        
+        try:
+            member = Member.objects.get(user=user)
+            
+            
+            borrowed_records = BorrowRecord.objects.filter(borrower=member)
+            
+            
+            context['borrowed_books_count'] = borrowed_records.filter(return_date__isnull=True).count()
+            
+            
+            context['returned_books_count'] = borrowed_records.filter(return_date__isnull=False).count()
+            
+
+            total_fines = 0
+            for record in borrowed_records:
+                total_fines += record.fine
+            context['total_fines'] = total_fines
+            
+            
+            context['recent_books'] = Book.objects.order_by('-Added_on')[:4]
+            
+        except Member.DoesNotExist:
+            pass
+            
+        return render(request, 'homepage.html', context)
+    else:
+        return redirect('/login/')
+
+
+def staff_dashboard(request):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        # Check if user is staff
+        if not Staff.objects.filter(user=user).exists():
+            messages.error(request, 'Access denied. Staff only area.')
+            return redirect('/home/')
+            
+        books = Book.objects.all().order_by('-Added_on')
+        return render(request, 'staff_dashboard.html', {'books': books})
+    else:
+        return redirect('/login/')
+
+def add_book(request):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        if not Staff.objects.filter(user=user).exists():
+            return redirect('/home/')
+            
+        if request.method == 'POST':
+            try:
+                title = request.POST['title']
+                author = request.POST['author']
+                isbn = request.POST['isbn']
+                published_date_str = request.POST['published_date']
+                published_date = datetime.strptime(published_date_str, '%Y-%m-%d').date()
+                genre = request.POST['genre']
+                price = request.POST['price']
+                pages = request.POST['pages']
+                image = request.FILES.get('image') # Use request.FILES
+                
+                book = Book.objects.create(Title=title, Author=author, ISBN=isbn,
+                                        Published_date=published_date, Genre=genre,
+                                        Price=price, Pages=pages, Image=image)
+                book.save()
+                messages.success(request, f'Book "{title}" added successfully.')
+                return redirect('/staff_dashboard/')
+            except Exception as e:
+                messages.error(request, f'Error adding book: {str(e)}')
+                return render(request, 'add_book.html')
+        else:
+            return render(request, 'add_book.html')
+    else:
+        return redirect('/login/')
+
+def edit_book(request, book_id):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        if not Staff.objects.filter(user=user).exists():
+            return redirect('/home/')
+            
+        try:
+            book = Book.objects.get(id=book_id)
+            if request.method == 'POST':
+                book.Title = request.POST['title']
+                book.Author = request.POST['author']
+                book.ISBN = request.POST['isbn']
+                published_date_str = request.POST['published_date']
+                book.Published_date = datetime.strptime(published_date_str, '%Y-%m-%d').date()
+                book.Genre = request.POST['genre']
+                book.Price = request.POST['price']
+                book.Pages = request.POST['pages']
+                
+                if 'image' in request.FILES:
+                    book.Image = request.FILES['image']
+                
+                book.save()
+                messages.success(request, f'Book "{book.Title}" updated successfully.')
+                return redirect('/staff_dashboard/')
+            else:
+                return render(request, 'edit_book.html', {'book': book})
+        except Book.DoesNotExist:
+            messages.error(request, 'Book not found.')
+            return redirect('/staff_dashboard/')
+    else:
+        return redirect('/login/')
+
+def delete_book(request, book_id):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        if not Staff.objects.filter(user=user).exists():
+            return redirect('/home/')
+            
+        try:
+            book = Book.objects.get(id=book_id)
+            title = book.Title
+            book.delete()
+            messages.success(request, f'Book "{title}" deleted successfully.')
+        except Book.DoesNotExist:
+            messages.error(request, 'Book not found.')
+            
+        return redirect('/staff_dashboard/')
+    else:
+        return redirect('/login/')
+
+def available_books(request):
+    if request.session.get('is_logged_in'):
+        books = Book.objects.filter(Status='available')
+        return render(request, 'available_books.html', {'books': books})
+    else:
+        return redirect('/login/')
+
+
+def borrow_book(request, book_id):
+    if request.session.get('is_logged_in'):
+        try:
+            book = Book.objects.get(id=book_id)
+            
+            if book.Status != 'available':
+                messages.error(request, 'This book is currently unavailable.')
+                return redirect('/available_books/')
+            
+            user = User.objects.get(id=request.session['user_id'])
+            try:
+                member = Member.objects.get(user=user)
+            except Member.DoesNotExist:
+                messages.error(request, 'Member profile not found. Please contact administrator.')
+                return redirect('/available_books/')
+            
+            borrow_date = date.today()
+            due_date = borrow_date + timedelta(days=14)  
+            
+            borrow_record = BorrowRecord.objects.create(
+                book=book, 
+                borrower=member,
+                borrow_date=borrow_date, 
+                due_date=due_date
+            )
+            borrow_record.save()
+            
+            book.Status = 'unavailable'
+            book.save()
+            
+            messages.success(request, f'Successfully borrowed "{book.Title}". Due date: {due_date.strftime("%B %d, %Y")}')
+            return redirect('/available_books/')
+            
+        except Book.DoesNotExist:
+            messages.error(request, 'Book not found.')
+            return redirect('/available_books/')
+    else:
+        return redirect('/login/')
+
+
+def my_books(request):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        try:
+            member = Member.objects.get(user=user)
+            
+            all_records = BorrowRecord.objects.filter(borrower=member).order_by('-borrow_date')
+            
+            active_loans = []
+            history = []
+            
+            today = date.today()
+            
+            for record in all_records:
+                if record.return_date is None:
+                    if today > record.due_date:
+                        record.is_overdue = True
+                        overdue_days = (today - record.due_date).days
+                        record.current_fine = overdue_days * 10
+                    else:
+                        record.is_overdue = False
+                        record.current_fine = 0
+                    active_loans.append(record)
+                else:
+                    history.append(record)
+            
+            context = {
+                'active_loans': active_loans,
+                'history': history
+            }
+            return render(request, 'borrowed_books.html', context)
+            
+        except Member.DoesNotExist:
+            messages.error(request, 'Member profile not found.')
+            return redirect('/home/')
+    else:
+        return redirect('/login/')
+
+def return_book(request, book_id):
+    if request.session.get('is_logged_in'):
+        try:
+            book = Book.objects.get(id=book_id)
+            user = User.objects.get(id=request.session['user_id'])
+            member = Member.objects.get(user=user)
+            
+            borrow_record = BorrowRecord.objects.get(book=book, borrower=member, return_date__isnull=True)
+            
+            today = date.today()
+            if today > borrow_record.due_date:
+                overdue_days = (today - borrow_record.due_date).days
+                fine_amount = overdue_days * 10
+                borrow_record.fine = fine_amount
+            
+            borrow_record.return_date = today
+            borrow_record.is_returned = True
+            borrow_record.save()
+            
+            book.Status = 'available'
+            book.save()
+            
+            messages.success(request, f'Successfully returned "{book.Title}".')
+            if borrow_record.fine > 0:
+                messages.warning(request, f'Book returned with a fine of ₹{borrow_record.fine}.')
+                
+        except (Book.DoesNotExist, Member.DoesNotExist, BorrowRecord.DoesNotExist):
+            messages.error(request, 'Error returning book. Record not found.')
+            
+        return redirect('/my_books/')
+    else:
+        return redirect('/login/')
+
+def fine(request,book_id):
+    if request.session.get('is_logged_in'):
+        book = Book.objects.get(id=book_id)
+        borrow_record = BorrowRecord.objects.get(book=book)
+        if borrow_record.return_date is None:
+            fine = (date.today() - borrow_record.due_date).days * 10 # 10 rupee per day late
+            borrow_record.fine = fine
+            borrow_record.save()
+        return redirect('/available_books/')
+    else:
+        return redirect('/login/')

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'sampleapp/new_style.css' %}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <center>
+
+        <h1>Welcome {{ fname }} {{lname}}</h1>
+        {{mes}}<br>
+        <table border="5">
+            <thead>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Action</th>
+            </thead>
+            {% for user in users %}
+            <tr>
+                <td>{{user.first_name}}</td>
+                <td>{{user.role}}</td>
+                <td><a href="{% url 'del' id=user.pk %}">Delete</a> | <a href="{% url 'upd' id=user.pk %}">Update</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="{% url 'logout' %}">Logout</a>
+    </center>
+</body>
+
+</html>

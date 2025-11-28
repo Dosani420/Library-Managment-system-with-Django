@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Book - Library Admin{% endblock title %}
+
+{% block body %}
+<div class="main-content">
+    <header class="dashboard-header">
+        <div>
+            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Add New Book</h1>
+            <p style="color: var(--text-secondary);">Enter the details of the new book to add to the library.</p>
+        </div>
+    </header>
+
+    <div class="glass-card" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+        <form action="{% url 'add_book' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <!-- Title -->
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label" for="title">Book Title</label>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="e.g. The Great Gatsby" required>
+                </div>
+
+                <!-- Author -->
+                <div class="form-group">
+                    <label class="form-label" for="author">Author</label>
+                    <input type="text" id="author" name="author" class="form-control" placeholder="e.g. F. Scott Fitzgerald" required>
+                </div>
+
+                <!-- ISBN -->
+                <div class="form-group">
+                    <label class="form-label" for="isbn">ISBN</label>
+                    <input type="text" id="isbn" name="isbn" class="form-control" placeholder="e.g. 978-3-16-148410-0" required>
+                </div>
+
+                <!-- Published Date -->
+                <div class="form-group">
+                    <label class="form-label" for="published_date">Published Date</label>
+                    <input type="date" id="published_date" name="published_date" class="form-control" required>
+                </div>
+
+                <!-- Genre -->
+                <div class="form-group">
+                    <label class="form-label" for="genre">Genre</label>
+                    <select id="genre" name="genre" class="form-control" required>
+                        <option value="">Select Genre</option>
+                        <option value="fiction">Fiction</option>
+                        <option value="nonfiction">Non-Fiction</option>
+                        <option value="science">Science</option>
+                        <option value="history">History</option>
+                        <option value="biography">Biography</option>
+                        <option value="mystery">Mystery</option>
+                        <option value="romance">Romance</option>
+                        <option value="selfhelp">Self Help</option>
+                        <option value="thriller">Thriller</option>
+                        <option value="youngadult">Young Adult</option>
+                    </select>
+                </div>
+
+                <!-- Price -->
+                <div class="form-group">
+                    <label class="form-label" for="price">Price ($)</label>
+                    <input type="number" id="price" name="price" class="form-control" placeholder="0.00" step="0.01" required>
+                </div>
+
+                <!-- Pages -->
+                <div class="form-group">
+                    <label class="form-label" for="pages">Pages</label>
+                    <input type="number" id="pages" name="pages" class="form-control" placeholder="e.g. 300" required>
+                </div>
+
+                <!-- Image -->
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label" for="image">Book Cover Image</label>
+                    <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Supported formats: JPG, PNG, WEBP</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="reset" class="btn btn-secondary">Reset</button>
+                <button type="submit" class="btn btn-primary">Add Book</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock body %}

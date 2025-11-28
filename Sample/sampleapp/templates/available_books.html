@@ -1,0 +1,169 @@
+{% extends "member_base.html" %}
+
+{% block title %}Available Books - Library{% endblock title %}
+
+{% block body %}
+<div class="main-content">
+    <header class="dashboard-header">
+        <div>
+            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📚 Available Books</h1>
+            <p style="color: var(--text-secondary);">Browse and borrow books from our collection.</p>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <input type="text" id="searchInput" placeholder="Search books..."
+                style="padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); width: 300px; font-size: 0.95rem;">
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+        <div style="padding: 1rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; 
+            {% if message.tags == 'success' %}background: rgba(16, 185, 129, 0.1); color: #059669; border-left: 4px solid #10b981;
+            {% elif message.tags == 'error' %}background: rgba(239, 68, 68, 0.1); color: #dc2626; border-left: 4px solid #ef4444;
+            {% else %}background: rgba(59, 130, 246, 0.1); color: #2563eb; border-left: 4px solid #3b82f6;{% endif %}">
+            <span style="font-size: 1.25rem;">
+                {% if message.tags == 'success' %}✓
+                {% elif message.tags == 'error' %}✕
+                {% else %}ℹ{% endif %}
+            </span>
+            <span style="font-weight: 500;">{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Stats -->
+    <div class="stats-grid" style="margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">✓</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">{{ books|length }}</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Available Books</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">📖</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">Ready</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">To Borrow</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">⏱️</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">14 Days</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Loan Period</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;"
+        id="booksGrid">
+        {% for book in books %}
+        <div class="book-card" data-title="{{ book.Title|lower }}" data-author="{{ book.Author|lower }}"
+            data-genre="{{ book.Genre|lower }}">
+            <div
+                style="position: relative; overflow: hidden; border-radius: var(--radius-md) var(--radius-md) 0 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 320px; display: flex; align-items: center; justify-content: center;">
+                {% if book.Image %}
+                <img src="{{ book.Image.url }}" alt="{{ book.Title }}"
+                    style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                <div style="font-size: 4rem; color: white; opacity: 0.8;">📚</div>
+                {% endif %}
+                <div
+                    style="position: absolute; top: 1rem; right: 1rem; background: rgba(16, 185, 129, 0.95); color: white; padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;">
+                    <span style="width: 8px; height: 8px; background: white; border-radius: 50%;"></span>
+                    Available
+                </div>
+            </div>
+            <div style="padding: 1.25rem;">
+                <h3
+                    style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); line-height: 1.4;">
+                    {{ book.Title }}</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem;">by {{ book.Author }}
+                </p>
+
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <span class="role-badge"
+                        style="background: rgba(99, 102, 241, 0.1); color: var(--primary); font-size: 0.8rem;">
+                        {{ book.Genre|title }}
+                    </span>
+                    <span class="role-badge"
+                        style="background: rgba(245, 158, 11, 0.1); color: var(--warning); font-size: 0.8rem;">
+                        {{ book.Pages }} pages
+                    </span>
+                </div>
+
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.2rem;">Published
+                        </div>
+                        <div style="font-weight: 600; font-size: 0.9rem;">{{ book.Published_date|date:"Y" }}</div>
+                    </div>
+                    <button onclick="window.location.href='{% url 'borrow_book' book.id %}'" class="btn btn-primary"
+                        style="padding: 0.6rem 1.2rem; font-size: 0.9rem;">
+                        Borrow Now
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📚</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">No Available Books</h3>
+            <p style="color: var(--text-muted);">There are currently no books available for borrowing. Please check back
+                later.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .book-card {
+        background: white;
+        border-radius: var(--radius-md);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .book-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .role-badge {
+        display: inline-block;
+        padding: 0.3rem 0.7rem;
+        border-radius: var(--radius-sm);
+        font-weight: 500;
+    }
+</style>
+
+<script>
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const booksGrid = document.getElementById('booksGrid');
+    const bookCards = document.querySelectorAll('.book-card');
+
+    searchInput.addEventListener('input', function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+
+        bookCards.forEach(card => {
+            const title = card.dataset.title;
+            const author = card.dataset.author;
+            const genre = card.dataset.genre;
+
+            if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock body %}

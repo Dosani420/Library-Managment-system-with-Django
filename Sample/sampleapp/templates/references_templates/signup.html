@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'sampleapp/new_style.css' %}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Signup</title>
+</head>
+
+<body>
+    <center>
+        <h1>Signup</h1>
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <div class="fullname">
+                <label for="fname">First Name</label>
+                <input type="text" name="fname" id="fname" placeholder="Enter your first name" required>
+                <br>
+                <label for="lname">Last Name</label>
+                <input type="text" name="lname" id="lname" placeholder="Enter your last name" required>
+            </div>
+
+            <div class="email">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" placeholder="Enter your email" required><br>
+                <label for="usn">Username</label>
+                <input type="text" name="username" id="usn" placeholder="Enter your username" required>
+            </div>
+
+            <div class="password">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                <br>
+                <label for="password">Confirm Password</label>
+                <input type="password" name="confirm" id="confirm" placeholder="Enter your password Again" required>
+            </div>
+
+            <div class='gender'>
+                <label>Gender</label>
+                <input type="radio" name="gender" id="Male" value="Male">
+                <label for="Male">Male</label>
+                <input type="radio" name="gender" id="Female" value="Female">
+                <label for="Female">Female</label>
+            </div>
+
+            <div class="dob">
+                <label for="dob">Date of Birth</label>
+                <input type="date" name="dob" id="dob">
+            </div>
+
+
+            <button type="submit">signup</button><br>
+
+        </form>
+        <a href="{% url 'login' %}">Already Have an Account?</a>
+    </center>
+</body>
+
+</html>

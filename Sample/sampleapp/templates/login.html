@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - User Hub</title>
+    <link rel="stylesheet" href="{% static 'sampleapp/premium_style.css' %}">
+</head>
+
+<body>
+    <div class="auth-container">
+        <!-- Left Side: Form -->
+        <div class="auth-left">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1 class="auth-title">Welcome back</h1>
+                    <p class="auth-subtitle">Please enter your details to sign in.</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {% if mes %}
+                    <div
+                        style="padding: 1rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: var(--radius-md); margin-bottom: 1rem;">
+                        {{ mes }}
+                    </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label class="form-label" for="usn">Username</label>
+                        <input type="text" name="username" id="usn" class="form-control"
+                            placeholder="Enter your username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="pwd">Password</label>
+                        <input type="password" name="loginpwd" id="pwd" class="form-control" placeholder="••••••••"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Sign
+                        In</button>
+
+                    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+                        Don't have an account? <a href="{% url 'signup' %}"
+                            style="color: var(--primary); font-weight: 600;">Sign up</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Side: Art -->
+        <div class="auth-right">
+            <div class="auth-art-content">
+                <h2 class="auth-art-title">Scale your team with confidence.</h2>
+                <p style="font-size: 1.1rem; opacity: 0.9;">Join thousands of companies that trust us to manage their
+                    user data securely and efficiently.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - User Hub</title>
+    <link rel="stylesheet" href="{% static 'sampleapp/premium_style.css' %}">
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span style="font-size: 2rem;">⚡</span> UserHub
+            </div>
+            <nav>
+                <a href="#" class="nav-item active">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <span>👥</span> Users
+                </a>
+                <a href="#" class="nav-item">
+                    <span>⚙️</span> Settings
+                </a>
+            </nav>
+            <div style="margin-top: auto;">
+                <a href="{% url 'logout' %}" class="nav-item" style="color: var(--danger);">
+                    <span>🚪</span> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div>
+                    <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Welcome back, {{ fname }}!</h1>
+                    <p style="color: var(--text-secondary);">Here's what's happening with your users today.</p>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                        {{ fname|slice:":1" }}
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div>
+                        <div style="font-size: 2rem; font-weight: 700;">{{ users|length }}</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Total Users</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">✅</div>
+                    <div>
+                        <div style="font-size: 2rem; font-weight: 700;">98%</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Active Now</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">⭐</div>
+                    <div>
+                        <div style="font-size: 2rem; font-weight: 700;">4.9</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">User Rating</div>
+                    </div>
+                </div>
+            </div>
+
+            {% if mes %}
+            <div
+                style="padding: 1rem; background: rgba(99, 102, 241, 0.1); color: var(--primary); border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                {{ mes }}
+            </div>
+            {% endif %}
+
+            <!-- Table -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">{{ user.first_name }} {{ user.last_name }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ user.email }}</div>
+                            </td>
+                            <td>
+                                <span class="role-badge role-{{ user.role|lower|default:'user' }}">
+                                    {{ user.role|default:'User' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span
+                                    style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; color: var(--text-secondary);">
+                                    <span
+                                        style="width: 8px; height: 8px; background: var(--success); border-radius: 50%;"></span>
+                                    Active
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <a href="{% url 'upd' id=user.pk %}" class="btn btn-sm btn-secondary"
+                                        title="Edit">✏️</a>
+                                    {% if request.session.role == 'manager' %}
+                                    <!-- Managers cannot delete anyone -->
+                                    <button class="btn btn-sm btn-danger" title="Delete" disabled
+                                        style="opacity: 0.5; cursor: not-allowed;">🗑️</button>
+                                    {% elif request.session.role == 'admin' and user.role == 'admin' %}
+                                    <!-- Admins cannot delete other admins -->
+                                    <button class="btn btn-sm btn-danger" title="Delete" disabled
+                                        style="opacity: 0.5; cursor: not-allowed;">🗑️</button>
+                                    {% else %}
+                                    <!-- Allow delete for admins deleting non-admins -->
+                                    <a href="{% url 'del' id=user.pk %}" class="btn btn-sm btn-danger"
+                                        title="Delete">🗑️</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

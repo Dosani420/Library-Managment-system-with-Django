@@ -1,0 +1,77 @@
+{% extends "member_base.html" %}
+
+{% block title %}Home - Member Dashboard{% endblock title %}
+
+{% block body %}
+<div class="main-content">
+    <header class="dashboard-header">
+        <div>
+            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Welcome back, {{ user.first_name }}!</h1>
+            <p style="color: var(--text-secondary);">Here's an overview of your reading activity.</p>
+        </div>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📖</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">{{ borrowed_books_count|default:"0" }}</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Books Borrowed</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">✅</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">{{ returned_books_count|default:"0" }}</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Books Returned</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">💰</div>
+            <div>
+                <div style="font-size: 2rem; font-weight: 700;">${{ total_fines|default:"0" }}</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Outstanding Fines</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Books Section -->
+    <div style="margin-top: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 700;">Recently Added Books</h2>
+            <a href="#" style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">View All</a>
+        </div>
+
+        <div class="feature-grid"
+            style="margin-top: 0; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+            {% for book in recent_books %}
+            <div class="feature-card" style="padding: 1rem;">
+                <div
+                    style="height: 250px; background: #eee; border-radius: var(--radius-md); margin-bottom: 1rem; overflow: hidden;">
+                    {% if book.Image %}
+                    <img src="{{ book.Image.url }}" alt="{{ book.Title }}"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                    <div
+                        style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                        📚</div>
+                    {% endif %}
+                </div>
+                <h3
+                    style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ book.Title }}</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">{{ book.Author }}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; color: var(--primary);">${{ book.Price }}</span>
+                    <button class="btn btn-sm btn-primary" style="padding: 0.25rem 0.5rem;">View</button>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">No books available at the
+                moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock body %}

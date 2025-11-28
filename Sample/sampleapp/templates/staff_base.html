@@ -114,8 +114,11 @@
             </div>
 
             <nav>
-                <a href="{% url 'staff_dashboard' %}" class="nav-item active">
+                <a href="{% url 'staff_dashboard' %}" class="nav-item">
                     <span>📊</span> <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="{% url 'manage_books' %}" class="nav-item">
+                    <span>📚</span> <span class="nav-text">Manage Books</span>
                 </a>
                 <a href="{% url 'add_book' %}" class="nav-item">
                     <span>➕</span> <span class="nav-text">Add Book</span>

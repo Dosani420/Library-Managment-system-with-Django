@@ -134,8 +134,34 @@ def staff_dashboard(request):
             messages.error(request, 'Access denied. Staff only area.')
             return redirect('/home/')
             
+        # Calculate stats
+        total_books = Book.objects.count()
+        total_members = Member.objects.count()
+        active_loans = BorrowRecord.objects.filter(return_date__isnull=True).count()
+        
+        # Calculate overdue books
+        today = date.today()
+        # Filter for active loans where due_date is before today
+        overdue_books = BorrowRecord.objects.filter(return_date__isnull=True, due_date__lt=today).count()
+        
+        context = {
+            'total_books': total_books,
+            'total_members': total_members,
+            'active_loans': active_loans,
+            'overdue_books': overdue_books
+        }
+        return render(request, 'staff_dashboard.html', context)
+    else:
+        return redirect('/login/')
+
+def manage_books(request):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        if not Staff.objects.filter(user=user).exists():
+            return redirect('/home/')
+            
         books = Book.objects.all().order_by('-Added_on')
-        return render(request, 'staff_dashboard.html', {'books': books})
+        return render(request, 'manage_books.html', {'books': books})
     else:
         return redirect('/login/')
 

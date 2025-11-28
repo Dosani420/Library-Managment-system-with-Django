@@ -33,4 +33,5 @@ urlpatterns = [
     path('return_book/<int:book_id>',views.return_book,name='return_book'),
     path('my_books/',views.my_books,name='my_books'),
     path('staff_dashboard/',views.staff_dashboard,name='staff_dashboard'),
+    path('manage_books/',views.manage_books,name='manage_books'),
 ]

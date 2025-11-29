@@ -5,8 +5,8 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - User Hub</title>
-    <link rel="stylesheet" href="{% static 'sampleapp/premium_style.css' %}">
+    <title>Join Library - Library Management System</title>
+    <link rel="stylesheet" href="{% static 'library_management/premium_style.css' %}">
 </head>
 
 <body>
@@ -15,14 +15,14 @@
         <div class="auth-left">
             <div class="auth-card" style="max-width: 500px;">
                 <div class="auth-header">
-                    <h1 class="auth-title">Create an account</h1>
-                    <p class="auth-subtitle">Start your 30-day free trial today.</p>
+                    <h1 class="auth-title">Join Our Library</h1>
+                    <p class="auth-subtitle">Create an account to start borrowing books today.</p>
                 </div>
 
                 <form method="post" action="{% url 'register' %}">
                     {% csrf_token %}
                     {% if mes %}
-                        <p style="color: red;">{{ mes }}</p>
+                    <p style="color: red;">{{ mes }}</p>
                     {% endif %}
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div class="form-group">
@@ -74,8 +74,8 @@
                     <div class="form-group">
                         <label class="form-label" for="role">Role</label>
                         <select name="role" id="role" class="form-control" onchange="toggleInitialId()">
-                            <option value="member">Member</option>
-                            <option value="staff">Staff</option>
+                            <option value="member">Member (Borrow Books)</option>
+                            <option value="staff">Staff (Manage Library)</option>
                         </select>
                     </div>
 
@@ -104,9 +104,9 @@
         <!-- Right Side: Art -->
         <div class="auth-right">
             <div class="auth-art-content">
-                <h2 class="auth-art-title">Join the community.</h2>
-                <p style="font-size: 1.1rem; opacity: 0.9;">Connect with millions of users worldwide and experience the
-                    difference.</p>
+                <h2 class="auth-art-title">Join our reading community.</h2>
+                <p style="font-size: 1.1rem; opacity: 0.9;">Connect with fellow readers and explore our vast collection
+                    of knowledge.</p>
             </div>
         </div>
     </div>

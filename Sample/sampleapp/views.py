@@ -15,14 +15,11 @@ def _login(request):
         username = request.POST['username']
         password = request.POST['loginpwd']
         user = authenticate(request,username=username,password=password)
-        print(user)
         if user is not None:
             login(request,user)
             request.session['user_id'] = user.id
-            print(user.id)
             request.session['is_logged_in'] = True
             
-            # Check if user is staff
             if Staff.objects.filter(user=user).exists():
                 return redirect('/staff_dashboard/')
             else:
@@ -73,6 +70,7 @@ def add_user(request):
                 return render(request, 'signup.html',{'mes':'Wrong OTP'})
 
         else:
+            
             member = Member.objects.create(user=user,gender=gender,
                                     date_of_birth=dob)
 
@@ -84,10 +82,8 @@ def user(request):
     if request.session.get('is_logged_in'):
         user = User.objects.get(id=request.session['user_id'])
         
-        # Redirect staff to staff dashboard
         if Staff.objects.filter(user=user).exists():
             return redirect('/staff_dashboard/')
-        
         
         context = {
             'user': user,
@@ -100,21 +96,16 @@ def user(request):
         try:
             member = Member.objects.get(user=user)
             
-            
             borrowed_records = BorrowRecord.objects.filter(borrower=member)
-            
             
             context['borrowed_books_count'] = borrowed_records.filter(return_date__isnull=True).count()
             
-            
             context['returned_books_count'] = borrowed_records.filter(return_date__isnull=False).count()
             
-
             total_fines = 0
             for record in borrowed_records:
                 total_fines += record.fine
             context['total_fines'] = total_fines
-            
             
             context['recent_books'] = Book.objects.order_by('-Added_on')[:4]
             
@@ -129,19 +120,15 @@ def user(request):
 def staff_dashboard(request):
     if request.session.get('is_logged_in'):
         user = User.objects.get(id=request.session['user_id'])
-        # Check if user is staff
         if not Staff.objects.filter(user=user).exists():
             messages.error(request, 'Access denied. Staff only area.')
             return redirect('/home/')
             
-        # Calculate stats
         total_books = Book.objects.count()
         total_members = Member.objects.count()
         active_loans = BorrowRecord.objects.filter(return_date__isnull=True).count()
         
-        # Calculate overdue books
         today = date.today()
-        # Filter for active loans where due_date is before today
         overdue_books = BorrowRecord.objects.filter(return_date__isnull=True, due_date__lt=today).count()
         
         context = {
@@ -181,7 +168,7 @@ def add_book(request):
                 genre = request.POST['genre']
                 price = request.POST['price']
                 pages = request.POST['pages']
-                image = request.FILES.get('image') # Use request.FILES
+                image = request.FILES.get('image')
                 
                 book = Book.objects.create(Title=title, Author=author, ISBN=isbn,
                                         Published_date=published_date, Genre=genre,
@@ -311,12 +298,12 @@ def my_books(request):
             for record in all_records:
                 if record.return_date is None:
                     if today > record.due_date:
-                        record.is_overdue = True
-                        overdue_days = (today - record.due_date).days
-                        record.current_fine = overdue_days * 10
-                    else:
-                        record.is_overdue = False
-                        record.current_fine = 0
+                        if record.is_returned == False:
+                            overdue_days = (today - record.due_date).days
+                            record.fine = overdue_days * 10
+                            print(f'fine:{record.fine}')
+                        else:
+                            record.fine = 0
                     active_loans.append(record)
                 else:
                     history.append(record)
@@ -325,6 +312,7 @@ def my_books(request):
                 'active_loans': active_loans,
                 'history': history
             }
+
             return render(request, 'borrowed_books.html', context)
             
         except Member.DoesNotExist:
@@ -366,14 +354,3 @@ def return_book(request, book_id):
     else:
         return redirect('/login/')
 
-def fine(request,book_id):
-    if request.session.get('is_logged_in'):
-        book = Book.objects.get(id=book_id)
-        borrow_record = BorrowRecord.objects.get(book=book)
-        if borrow_record.return_date is None:
-            fine = (date.today() - borrow_record.due_date).days * 10 # 10 rupee per day late
-            borrow_record.fine = fine
-            borrow_record.save()
-        return redirect('/available_books/')
-    else:
-        return redirect('/login/')

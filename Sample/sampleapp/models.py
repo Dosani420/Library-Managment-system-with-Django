@@ -20,7 +20,7 @@ class CommonInfo(models.Model):
         if today.month < self.date_of_birth.month or \
            (today.month == self.date_of_birth.month and today.day < self.date_of_birth.day):
             age -= 1
-        return age
+        return age0
 
     class Meta:
         abstract = True
@@ -31,7 +31,7 @@ class Staff(CommonInfo):
     ('Library Admin','Library Admin')
     ]
 
-    employee_id = models.CharField(max_length=50,unique=True,default='STF-')
+    employee_id = models.CharField(max_length=50,default='STF-')
     hire_date = models.DateField(auto_now_add=True)
     role = models.CharField(max_length=50,choices=Role_choice,default='Librarian')
     
@@ -39,7 +39,7 @@ class Staff(CommonInfo):
         return f'{self.user.first_name} {self.user.last_name}'
 
 class Member(CommonInfo):
-    member_id = models.CharField(max_length=50,unique=True,default='MBR-')
+    member_id = models.CharField(max_length=50,default='MBR-')
     join_date = models.DateField(auto_now_add=True)
     expiry_date = models.DateField(default=date.today() + timedelta(days=365))  
     def __str__(self):

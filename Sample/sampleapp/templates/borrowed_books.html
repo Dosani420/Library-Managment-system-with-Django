@@ -83,20 +83,22 @@
                                     <div style="font-weight: 600; color: var(--text-main);">{{ record.book.Title }}
                                     </div>
                                     <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ record.book.Author
-                                        }}</div>
+                                        }}
+                                    </div>
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.borrow_date }}</td>
                         <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.due_date }}</td>
                         <td style="padding: 1rem 1.5rem;">
-                            {% if record.is_overdue %}
+                            {% if record.is_returned == False %}
                             <span
                                 style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: 2rem; font-size: 0.85rem; font-weight: 600;">
                                 ⚠️ Overdue
                             </span>
-                            <div style="font-size: 0.8rem; color: var(--danger); margin-top: 0.25rem;">Fine: ₹{{
-                                record.current_fine }}</div>
+                            <div style="font-size: 0.8rem; color: var(--danger); margin-top: 0.25rem;">Fine: PKR-{{
+                                record.fine }}
+                            </div>
                             {% else %}
                             <span
                                 style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 2rem; font-size: 0.85rem; font-weight: 600;">

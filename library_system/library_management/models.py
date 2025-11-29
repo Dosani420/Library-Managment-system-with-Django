@@ -88,6 +88,7 @@ class BorrowRecord(models.Model):
     return_date = models.DateField(null=True, blank=True)
     due_date = models.DateField()
     is_returned = models.BooleanField(default=False)
+    is_overdue = models.BooleanField(default=False)
     fine = models.IntegerField(default=0)
     
     def __str__(self):

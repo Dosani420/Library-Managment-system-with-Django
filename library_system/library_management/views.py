@@ -301,9 +301,10 @@ def my_books(request):
                         if record.is_returned == False:
                             overdue_days = (today - record.due_date).days
                             record.fine = overdue_days * 10
-                            print(f'fine:{record.fine}')
+                            record.is_overdue = True
                         else:
                             record.fine = 0
+                            record.is_overdue = False
                     active_loans.append(record)
                 else:
                     history.append(record)

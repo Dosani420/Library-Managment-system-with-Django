@@ -206,43 +206,43 @@ The **Library Management System** is a comprehensive web application designed to
 ## 📂 Project Structure
 
 ```
-New Project/
-├── Sample/                      # Main Django project directory
-│   ├── Sample/                  # Project configuration
+LMS/
+├── library_system/                 # Main Django project directory
+│   ├── library_system/             # Project configuration
 │   │   ├── __init__.py
-│   │   ├── settings.py         # Django settings
-│   │   ├── urls.py             # Main URL configuration
-│   │   ├── wsgi.py             # WSGI configuration
-│   │   └── asgi.py             # ASGI configuration
+│   │   ├── settings.py             # Django settings
+│   │   ├── urls.py                 # Main URL configuration
+│   │   ├── wsgi.py                 # WSGI configuration
+│   │   └── asgi.py                 # ASGI configuration
 │   │
-│   ├── sampleapp/              # Main application
-│   │   ├── migrations/         # Database migrations
-│   │   ├── templates/          # HTML templates
-│   │   │   ├── index.html           # Landing page
-│   │   │   ├── login.html           # Login page
-│   │   │   ├── signup.html          # Registration page
-│   │   │   ├── staff_base.html      # Staff base template
-│   │   │   ├── member_base.html     # Member base template
-│   │   │   ├── staff_dashboard.html # Staff dashboard
-│   │   │   ├── manage_books.html    # Book management
-│   │   │   ├── add_book.html        # Add book form
-│   │   │   ├── edit_book.html       # Edit book form
-│   │   │   ├── available_books.html # Browse books
-│   │   │   ├── borrowed_books.html  # Borrowed books view
-│   │   │   └── homepage.html        # Member homepage
+│   ├── library_management/         # Main application
+│   │   ├── migrations/             # Database migrations
+│   │   ├── templates/              # HTML templates
+│   │   │   ├── index.html          # Landing page
+│   │   │   ├── login.html          # Login page
+│   │   │   ├── signup.html         # Registration page
+│   │   │   ├── staff_base.html     # Staff base template
+│   │   │   ├── member_base.html    # Member base template
+│   │   │   ├── staff_dashboard.html# Staff dashboard
+│   │   │   ├── manage_books.html   # Book management
+│   │   │   ├── add_book.html       # Add book form
+│   │   │   ├── edit_book.html      # Edit book form
+│   │   │   ├── available_books.html# Browse books
+│   │   │   ├── borrowed_books.html # Borrowed books view
+│   │   │   └── homepage.html       # Member homepage
 │   │   │
-│   │   ├── models.py           # Database models
-│   │   ├── views.py            # View functions
-│   │   ├── urls.py             # App URL routing
-│   │   ├── admin.py            # Admin configuration
-│   │   └── apps.py             # App configuration
+│   │   ├── models.py               # Database models
+│   │   ├── views.py                # View functions
+│   │   ├── urls.py                 # App URL routing
+│   │   ├── admin.py                # Admin configuration
+│   │   └── apps.py                 # App configuration
 │   │
-│   ├── media/                  # Uploaded files (book covers)
-│   ├── db.sqlite3              # SQLite database
-│   └── manage.py               # Django management script
+│   ├── media/                      # Uploaded files (book covers)
+│   ├── db.sqlite3                  # SQLite database
+│   └── manage.py                   # Django management script
 │
-├── requirements.txt            # Python dependencies
-└── README.md                   # This file
+├── requirements.txt                # Python dependencies
+└── README.md                       # This file
 ```
 
 ---

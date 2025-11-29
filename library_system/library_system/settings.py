@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'sampleapp',
+    'library_management',
 
 ]
 
@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Sample.urls'
+ROOT_URLCONF = 'library_system.urls'
 
 
 LOGIN_REDIRECT_URL = '/home/'  # or '/dashboard/' or '/home/'
@@ -73,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Sample.wsgi.application'
+WSGI_APPLICATION = 'library_system.wsgi.application'
 
 
 # Database

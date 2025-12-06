@@ -433,3 +433,15 @@ def return_book(request, book_id):
     else:
         return redirect('/login/')
 
+def manage_members(request):
+    members = Member.objects.all()
+    active = Member.objects.filter(status='Active').count()
+    inactive = Member.objects.filter(status='Inactive').count()
+    blocked = Member.objects.filter(status='Blocked').count()
+    books_borrowed = BorrowRecord.objects.filter(is_returned = False)
+    content = {'members':members,
+               'active': active,
+               'inactive':inactive,
+               'blocked':blocked,
+               'books':books_borrowed}
+    return render(request,'manage_members.html',content)

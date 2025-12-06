@@ -36,5 +36,6 @@ urlpatterns = [
     path('manage_books/',views.manage_books,name='manage_books'),
     path('history/',views.member_history,name='member_history'),
     path('fines/',views.member_fine,name='fines'),
-    path('Password Reset',views.password_reset,name='forget_password')
+    path('Password Reset',views.password_reset,name='forget_password'),
+    path('managemembers/',views.manage_members,name='managemembers')
 ]

@@ -44,9 +44,11 @@ class Staff(CommonInfo):
         return f'{self.user.first_name} {self.user.last_name}'
 
 class Member(CommonInfo):
+    
     member_id = models.CharField(max_length=50, default='MBR-')
     join_date = models.DateField(auto_now_add=True)
     expiry_date = models.DateField(default=get_expiry_date)
+    status = models.CharField(max_length=50,default='Active')
     
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'

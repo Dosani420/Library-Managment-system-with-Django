@@ -7,96 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Member Dashboard - Library{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'library_management/premium_style.css' %}">
-    <style>
-        /* Sidebar Collapse Styles */
-        body.collapsed .sidebar {
-            width: 80px;
-        }
-
-        body.collapsed .main-content {
-            margin-left: 80px;
-        }
-
-        body.collapsed .sidebar .logo-text,
-        body.collapsed .sidebar .nav-text {
-            display: none;
-        }
-
-        body.collapsed .sidebar .sidebar-logo {
-            justify-content: center;
-            padding: 0;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        body.collapsed .sidebar .nav-item {
-            justify-content: center;
-            padding: 0.875rem 0;
-        }
-
-        body.collapsed .sidebar .nav-item span:first-child {
-            margin-right: 0;
-            font-size: 1.5rem;
-        }
-
-        body.collapsed .sidebar-logo button {
-            margin-left: 0 !important;
-        }
-
-        /* Profile Dropdown Styles */
-        .profile-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .profile-trigger {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 1px solid var(--border-light);
-        }
-
-        .dropdown-content a {
-            color: var(--text-main);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 0.9rem;
-        }
-
-        .dropdown-content a:hover {
-            background-color: var(--bg-body);
-            color: var(--primary);
-        }
-
-        .show {
-            display: block;
-        }
-
-        /* Footer Styles */
-        .dashboard-footer {
-            margin-top: auto;
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border-light);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'library_management/enhanced_ui.css' %}">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -105,35 +18,43 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span>📚</span> <span class="logo-text">LibMember</span>
+                    <i data-lucide="book-open" style="width: 24px; height: 24px; color: var(--primary);"></i>
+                    <span class="logo-text">LibMember</span>
                 </div>
                 <button id="sidebarToggle"
-                    style="background: none; border: none; cursor: pointer; color: var(--text-muted);">
-                    ☰
+                    style="background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0.5rem;">
+                    <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
                 </button>
             </div>
 
             <nav>
                 <a href="{% url 'user' %}" class="nav-item active">
-                    <span>🏠</span> <span class="nav-text">Home</span>
+                    <i data-lucide="home" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Home</span>
                 </a>
                 <a href="{% url 'my_books' %}" class="nav-item">
-                    <span>📖</span> <span class="nav-text">My Books</span>
+                    <i data-lucide="book-marked" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">My Books</span>
                 </a>
                 <a href="{% url 'available_books' %}" class="nav-item">
-                    <span>📚</span> <span class="nav-text">Available Books</span>
+                    <i data-lucide="library" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Available Books</span>
+                </a>
+                <a href="{% url 'member_history' %}" class="nav-item">
+                    <i data-lucide="history" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">History</span>
                 </a>
                 <a href="#" class="nav-item">
-                    <span>📅</span> <span class="nav-text">History</span>
+                    <i data-lucide="bookmark" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Reservations</span>
+                </a>
+                <a href="{% url 'fines' %}" class="nav-item">
+                    <i data-lucide="dollar-sign" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Fines</span>
                 </a>
                 <a href="#" class="nav-item">
-                    <span>🔖</span> <span class="nav-text">Reservations</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <span>💰</span> <span class="nav-text">Fines</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <span>⚙️</span> <span class="nav-text">Settings</span>
+                    <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Settings</span>
                 </a>
             </nav>
         </aside>
@@ -154,11 +75,11 @@
                             {% endif %}
                         </div>
                         <span style="font-weight: 600; font-size: 0.9rem;">{{ user.first_name }}</span>
-                        <span style="font-size: 0.8rem;">▼</span>
+                        <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i>
                     </div>
                     <div id="myDropdown" class="dropdown-content">
                         <a href="#">My Profile</a>
-                        <a href="#">Change Password</a>
+                        <a href="{% url 'forget_password' %}">Change Password</a>
                         <a href="#">Help & Support</a>
                         <div style="border-top: 1px solid var(--border-light); margin: 0.2rem 0;"></div>
                         <a href="{% url 'logout' %}" style="color: var(--danger);">Logout</a>
@@ -210,6 +131,11 @@
                 }
             }
         }
+    </script>
+    <script src="{% static 'library_management/enhanced_ui.js' %}"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
     </script>
 </body>
 

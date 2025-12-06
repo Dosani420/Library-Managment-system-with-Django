@@ -4,74 +4,221 @@
 
 {% block body %}
 <div class="main-content">
-    <header class="dashboard-header">
+    <!-- Welcome Header with Quick Actions -->
+    <header class="dashboard-header" style="margin-bottom: 2rem;">
         <div>
-            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Welcome back, {{ user.first_name }}!</h1>
-            <p style="color: var(--text-secondary);">Here's an overview of your reading activity.</p>
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem; font-weight: 800;">Welcome back, {{ user.first_name }}!
+                👋</h1>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">Here's your reading journey at a glance</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'available_books' %}" class="btn btn-primary">
+                <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                Browse Books
+            </a>
+            <a href="{% url 'my_books' %}" class="btn btn-secondary">
+                <i data-lucide="book-marked" style="width: 18px; height: 18px;"></i>
+                My Books
+            </a>
         </div>
     </header>
 
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon">📖</div>
+    <!-- Enhanced Stats Grid with Progress -->
+    <div class="stats-grid" style="margin-bottom: 3rem;">
+        <div class="stat-card"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+            <div class="stat-icon" style="background: rgba(255, 255, 255, 0.2); color: white;">
+                <i data-lucide="book-open" style="width: 24px; height: 24px;"></i>
+            </div>
             <div>
-                <div style="font-size: 2rem; font-weight: 700;">{{ borrowed_books_count|default:"0" }}</div>
-                <div style="color: var(--text-muted); font-size: 0.9rem;">Books Borrowed</div>
+                <div style="font-size: 2.5rem; font-weight: 800;">{{ borrowed_books_count|default:"0" }}</div>
+                <div style="opacity: 0.9; font-size: 0.95rem; font-weight: 500;">Currently Reading</div>
+                <div class="progress-bar" style="margin-top: 0.75rem; background: rgba(255, 255, 255, 0.2);">
+                    <div class="progress-fill"
+                        style="width: {% widthratio borrowed_books_count 10 100 %}%; background: white;"></div>
+                </div>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">✅</div>
+
+        <div class="stat-card hover-lift">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                <i data-lucide="check-circle-2" style="width: 24px; height: 24px;"></i>
+            </div>
             <div>
-                <div style="font-size: 2rem; font-weight: 700;">{{ returned_books_count|default:"0" }}</div>
-                <div style="color: var(--text-muted); font-size: 0.9rem;">Books Returned</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--success);">{{ returned_books_count|default:"0" }}</div>
+                <div style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">Books Completed</div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--success); font-weight: 600;">
+                    <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
+                    Great progress!
+                </div>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">💰</div>
+
+        <div class="stat-card hover-lift">
+            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                <i data-lucide="alert-circle" style="width: 24px; height: 24px;"></i>
+            </div>
             <div>
-                <div style="font-size: 2rem; font-weight: 700;">${{ total_fines|default:"0" }}</div>
-                <div style="color: var(--text-muted); font-size: 0.9rem;">Outstanding Fines</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--danger);">PKR {{ total_fines|default:"0" }}</div>
+                <div style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">Outstanding Fines</div>
+                {% if total_fines > 0 %}
+                <a href="{% url 'fines' %}"
+                    style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--danger); font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem;">
+                    Pay Now <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                </a>
+                {% else %}
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--success); font-weight: 600;">
+                    <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                    All clear!
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Recent Books Section -->
-    <div style="margin-top: 3rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h2 style="font-size: 1.5rem; font-weight: 700;">Recently Added Books</h2>
-            <a href="#" style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">View All</a>
+    <!-- Reading Activity Chart -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+        <!-- Activity Chart Card -->
+        <div class="glass-card" style="padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;">Reading Activity</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Your borrowing pattern over time</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm"
+                        style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">Week</button>
+                    <button class="btn btn-sm btn-secondary">Month</button>
+                    <button class="btn btn-sm btn-secondary">Year</button>
+                </div>
+            </div>
+            <!-- Simple Bar Chart Visualization -->
+            <div
+                style="display: flex; align-items: flex-end; justify-content: space-between; height: 200px; gap: 0.5rem;">
+                {% for i in "1234567" %}
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <div style="width: 100%; background: linear-gradient(to top, var(--primary), var(--secondary)); border-radius: 8px 8px 0 0; height: {% cycle '60' '80' '45' '90' '70' '55' '85' %}%; transition: all 0.3s; cursor: pointer;"
+                        onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                    </div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">{% cycle 'Mon' 'Tue' 'Wed' 'Thu' 'Fri' 'Sat' 'Sun' %}</span>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
-        <div class="feature-grid"
-            style="margin-top: 0; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
-            {% for book in recent_books %}
-            <div class="feature-card" style="padding: 1rem;">
+        <!-- Quick Stats Card -->
+        <div class="glass-card" style="padding: 2rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">Quick Stats</h3>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Reading Goal</span>
+                        <span style="font-weight: 700; color: var(--primary);">{{ returned_books_count|default:"0" }}/12</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% widthratio returned_books_count 12 100 %}%;"></div>
+                    </div>
+                </div>
                 <div
-                    style="height: 250px; background: #eee; border-radius: var(--radius-md); margin-bottom: 1rem; overflow: hidden;">
+                    style="padding: 1rem; background: rgba(99, 102, 241, 0.05); border-radius: var(--radius-md); border-left: 3px solid var(--primary);">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Favorite Genre
+                    </div>
+                    <div style="font-weight: 700; font-size: 1.1rem;">Fiction</div>
+                </div>
+                <div
+                    style="padding: 1rem; background: rgba(16, 185, 129, 0.05); border-radius: var(--radius-md); border-left: 3px solid var(--success);">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Avg. Reading Time
+                    </div>
+                    <div style="font-weight: 700; font-size: 1.1rem;">7 days</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recently Added Books with Enhanced Cards -->
+    <div style="margin-top: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.25rem;">Recently Added Books</h2>
+                <p style="color: var(--text-muted);">Fresh additions to our collection</p>
+            </div>
+            <a href="{% url 'available_books' %}" class="btn btn-secondary"
+                style="display: flex; align-items: center; gap: 0.5rem;">
+                View All <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+            </a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;">
+            {% for book in recent_books %}
+            <div class="book-card hover-lift"
+                style="background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s;">
+                <div
+                    style="position: relative; overflow: hidden; height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     {% if book.Image %}
                     <img src="{{ book.Image.url }}" alt="{{ book.Title }}"
-                        style="width: 100%; height: 100%; object-fit: cover;">
+                        style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
+                        onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     {% else %}
                     <div
-                        style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
-                        📚</div>
+                        style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="book" style="width: 80px; height: 80px; color: white; opacity: 0.5;"></i>
+                    </div>
                     {% endif %}
+                    <div
+                        style="position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 0.4rem 0.8rem; border-radius: 999px; font-size: 0.85rem; font-weight: 700; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        New
+                    </div>
+                    <div
+                        style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); padding: 2rem 1rem 1rem;">
+                        <div style="color: white; font-size: 0.85rem; font-weight: 600; opacity: 0.9;">{{ book.Genre|title }}</div>
+                    </div>
                 </div>
-                <h3
-                    style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    {{ book.Title }}</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">{{ book.Author }}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 700; color: var(--primary);">${{ book.Price }}</span>
-                    <button class="btn btn-sm btn-primary" style="padding: 0.25rem 0.5rem;">View</button>
+                <div style="padding: 1.25rem;">
+                    <h3
+                        style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ book.Title }}
+                    </h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">by {{ book.Author }}</p>
+
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Price</div>
+                            <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">PKR {{ book.Price }}</div>
+                        </div>
+                        <button onclick="window.location.href='#'" class="btn btn-primary btn-sm"
+                            style="padding: 0.5rem 1rem;">
+                            <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                            View
+                        </button>
+                    </div>
                 </div>
             </div>
             {% empty %}
-            <p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">No books available at the
-                moment.</p>
+            <div class="empty-state" style="grid-column: 1/-1;">
+                <div class="empty-state-icon">
+                    <i data-lucide="book-x" style="width: 64px; height: 64px;"></i>
+                </div>
+                <h3 class="empty-state-title">No Books Available</h3>
+                <p class="empty-state-description">Check back later for new additions to our collection.</p>
+            </div>
             {% endfor %}
         </div>
+    </div>
+
+    <!-- Reading Recommendations -->
+    <div
+        style="margin-top: 4rem; padding: 3rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1)); border-radius: var(--radius-xl); text-align: center;">
+        <i data-lucide="sparkles" style="width: 48px; height: 48px; color: var(--primary); margin-bottom: 1rem;"></i>
+        <h3 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Discover Your Next Great Read</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.05rem;">Based on your reading history,
+            we have some recommendations for you</p>
+        <a href="{% url 'available_books' %}" class="btn btn-primary"
+            style="padding: 0.875rem 2rem; font-size: 1.05rem;">
+            <i data-lucide="compass" style="width: 20px; height: 20px;"></i>
+            Explore Recommendations
+        </a>
     </div>
 </div>
 {% endblock body %}

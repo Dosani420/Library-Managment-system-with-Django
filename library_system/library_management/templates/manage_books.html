@@ -3,113 +3,123 @@
 {% block title %}Manage Books - Staff Dashboard{% endblock title %}
 
 {% block body %}
-<div class="main-content">
-    <header class="dashboard-header">
-        <div>
-            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📚 Manage Books</h1>
-            <p style="color: var(--text-secondary);">Add, update, or remove books from the library collection.</p>
-        </div>
-        <a href="{% url 'add_book' %}" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
-            <span>➕</span> Add New Book
-        </a>
-    </header>
-
-    <!-- Messages -->
-    {% if messages %}
-    <div style="margin-bottom: 1.5rem;">
-        {% for message in messages %}
-        <div style="padding: 1rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; 
-            {% if message.tags == 'success' %}background: rgba(16, 185, 129, 0.1); color: #059669; border-left: 4px solid #10b981;
-            {% elif message.tags == 'error' %}background: rgba(239, 68, 68, 0.1); color: #dc2626; border-left: 4px solid #ef4444;
-            {% else %}background: rgba(59, 130, 246, 0.1); color: #2563eb; border-left: 4px solid #3b82f6;{% endif %}">
-            <span style="font-weight: 500;">{{ message }}</span>
-        </div>
-        {% endfor %}
+<header class="dashboard-header">
+    <div>
+        <h1 class="page-title">
+            <i data-lucide="library" style="width: 28px; height: 28px; color: var(--primary);"></i>
+            Manage Books
+        </h1>
+        <p class="page-subtitle">Add, update, or remove books from the library collection.</p>
     </div>
-    {% endif %}
+    <a href="{% url 'add_book' %}" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
+        <i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i>
+        Add New Book
+    </a>
+</header>
 
-    <!-- Books Table -->
-    <div
-        style="background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;">
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: var(--bg-body); text-align: left;">
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
-                            Book</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
-                            ISBN</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
-                            Genre</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
-                            Status</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
-                            Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for book in books %}
-                    <tr style="border-bottom: 1px solid var(--border-light);">
-                        <td style="padding: 1rem 1.5rem;">
-                            <div style="display: flex; align-items: center; gap: 1rem;">
+<!-- Messages -->
+{% if messages %}
+<div class="mb-8">
+    {% for message in messages %}
+    <div data-django-message
+        data-message-type="{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}"
+        style="display: none;">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Books Table -->
+<div class="table-container"
+    style="background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;">
+    <div style="overflow-x: auto;">
+        <table class="data-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: var(--bg-body); text-align: left;">
+                    <th
+                        style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
+                        Book</th>
+                    <th
+                        style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
+                        ISBN</th>
+                    <th
+                        style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
+                        Genre</th>
+                    <th
+                        style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
+                        Status</th>
+                    <th
+                        style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
+                        Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr style="border-bottom: 1px solid var(--border-light);">
+                    <td style="padding: 1rem 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div
+                                style="width: 40px; height: 60px; background: #eee; border-radius: 4px; overflow: hidden; flex-shrink: 0;">
+                                {% if book.Image %}
+                                <img src="{{ book.Image.url }}" alt=""
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
                                 <div
-                                    style="width: 40px; height: 60px; background: #eee; border-radius: 4px; overflow: hidden; flex-shrink: 0;">
-                                    {% if book.Image %}
-                                    <img src="{{ book.Image.url }}" alt=""
-                                        style="width: 100%; height: 100%; object-fit: cover;">
-                                    {% else %}
-                                    <div
-                                        style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                                        📚</div>
-                                    {% endif %}
+                                    style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                    <i data-lucide="book"
+                                        style="width: 24px; height: 24px; color: var(--text-muted);"></i>
                                 </div>
-                                <div>
-                                    <div style="font-weight: 600; color: var(--text-main);">{{ book.Title }}</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ book.Author }}
-                                    </div>
-                                </div>
+                                {% endif %}
                             </div>
-                        </td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ book.ISBN }}</td>
-                        <td style="padding: 1rem 1.5rem;">
-                            <span
-                                style="background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">
-                                {{ book.Genre|title }}
-                            </span>
-                        </td>
-                        <td style="padding: 1rem 1.5rem;">
-                            {% if book.Status == 'available' %}
-                            <span style="color: var(--success); font-weight: 600; font-size: 0.85rem;">Available</span>
-                            {% else %}
-                            <span
-                                style="color: var(--warning); font-weight: 600; font-size: 0.85rem;">Unavailable</span>
-                            {% endif %}
-                        </td>
-                        <td style="padding: 1rem 1.5rem;">
-                            <div style="display: flex; gap: 0.5rem;">
-                                <a href="{% url 'edit_book' book.id %}" class="btn btn-sm"
-                                    style="background: rgba(59, 130, 246, 0.1); color: var(--primary); padding: 0.4rem 0.8rem;">Edit</a>
-                                <button onclick="deleteBook({{ book.id }}, '{{ book.Title|escapejs }}')"
-                                    class="btn btn-sm"
-                                    style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 0.4rem 0.8rem;">Delete</button>
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-main);">{{ book.Title }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ book.Author }}</div>
                             </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" style="padding: 3rem; text-align: center; color: var(--text-muted);">
-                            No books found in the library.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </td>
+                    <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ book.ISBN }}</td>
+                    <td style="padding: 1rem 1.5rem;">
+                        <span
+                            style="background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">
+                            {{ book.Genre|title }}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem 1.5rem;">
+                        {% if book.Status == 'available' %}
+                        <span style="color: var(--success); font-weight: 600; font-size: 0.85rem;">Available</span>
+                        {% else %}
+                        <span style="color: var(--warning); font-weight: 600; font-size: 0.85rem;">Unavailable</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem 1.5rem;">
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{% url 'edit_book' book.id %}" class="btn btn-sm"
+                                style="background: rgba(59, 130, 246, 0.1); color: var(--primary); padding: 0.4rem 0.8rem;">Edit</a>
+                            <button onclick="deleteBook({{ book.id }}, '{{ book.Title|escapejs }}')" class="btn btn-sm"
+                                style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 0.4rem 0.8rem;">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 3rem; text-align: center;">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i data-lucide="book-x" style="width: 64px; height: 64px;"></i>
+                            </div>
+                            <h3 class="empty-state-title">No Books Found</h3>
+                            <p class="empty-state-description">Start by adding your first book to the library.</p>
+                            <a href="{% url 'add_book' %}" class="btn btn-primary" style="margin-top: 1rem;">
+                                <i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i>
+                                Add First Book
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 

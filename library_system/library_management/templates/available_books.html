@@ -4,166 +4,406 @@
 
 {% block body %}
 <div class="main-content">
-    <header class="dashboard-header">
-        <div>
-            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📚 Available Books</h1>
-            <p style="color: var(--text-secondary);">Browse and borrow books from our collection.</p>
+    <!-- Enhanced Header with Search and Filters -->
+    <header class="dashboard-header" style="flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="flex: 1; min-width: 300px;">
+            <h1
+                style="font-size: 2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="library" style="width: 32px; height: 32px; color: var(--primary);"></i>
+                Available Books
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">{{ books|length }} books ready to borrow</p>
         </div>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <input type="text" id="searchInput" placeholder="Search books..."
-                style="padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); width: 300px; font-size: 0.95rem;">
+
+        <!-- Advanced Search Bar -->
+        <div class="search-wrapper" style="flex: 1; min-width: 350px; max-width: 500px; position: relative;">
+            <i data-lucide="search" class="search-icon" style="width: 20px; height: 20px;"></i>
+            <input type="text" id="searchInput" placeholder="Search by title, author, or genre..."
+                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s;"
+                onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 4px rgba(99, 102, 241, 0.1)'"
+                onblur="this.style.borderColor='var(--border-light)'; this.style.boxShadow='none'">
         </div>
     </header>
 
     <!-- Messages -->
     {% if messages %}
-    <div style="margin-bottom: 1.5rem;">
+    <div style="margin-bottom: 2rem;">
         {% for message in messages %}
-        <div style="padding: 1rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; 
-            {% if message.tags == 'success' %}background: rgba(16, 185, 129, 0.1); color: #059669; border-left: 4px solid #10b981;
-            {% elif message.tags == 'error' %}background: rgba(239, 68, 68, 0.1); color: #dc2626; border-left: 4px solid #ef4444;
-            {% else %}background: rgba(59, 130, 246, 0.1); color: #2563eb; border-left: 4px solid #3b82f6;{% endif %}">
-            <span style="font-size: 1.25rem;">
-                {% if message.tags == 'success' %}✓
-                {% elif message.tags == 'error' %}✕
-                {% else %}ℹ{% endif %}
-            </span>
-            <span style="font-weight: 500;">{{ message }}</span>
+        <div data-django-message
+            data-message-type="{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}"
+            style="display: none;">
+            {{ message }}
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <!-- Stats -->
-    <div class="stats-grid" style="margin-bottom: 2rem;">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">✓</div>
-            <div>
-                <div style="font-size: 2rem; font-weight: 700;">{{ books|length }}</div>
-                <div style="color: var(--text-muted); font-size: 0.9rem;">Available Books</div>
+    <!-- Filters and View Toggle Bar -->
+    <div
+        style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <!-- Filters -->
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; flex: 1;">
+                <select id="genreFilter" class="form-control" style="width: auto; min-width: 150px;">
+                    <option value="">All Genres</option>
+                    <option value="fiction">Fiction</option>
+                    <option value="nonfiction">Non-Fiction</option>
+                    <option value="science">Science</option>
+                    <option value="history">History</option>
+                    <option value="biography">Biography</option>
+                    <option value="mystery">Mystery</option>
+                    <option value="romance">Romance</option>
+                    <option value="selfhelp">Self Help</option>
+                    <option value="thriller">Thriller</option>
+                    <option value="youngadult">Young Adult</option>
+                </select>
+
+                <select id="sortFilter" class="form-control" style="width: auto; min-width: 150px;">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="title-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                    <option value="author-asc">Author (A-Z)</option>
+                    <option value="price-low">Price (Low to High)</option>
+                    <option value="price-high">Price (High to Low)</option>
+                </select>
+
+                <button class="btn btn-secondary" onclick="resetFilters()">
+                    <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                    Reset
+                </button>
             </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">📖</div>
-            <div>
-                <div style="font-size: 2rem; font-weight: 700;">Ready</div>
-                <div style="color: var(--text-muted); font-size: 0.9rem;">To Borrow</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">⏱️</div>
-            <div>
-                <div style="font-size: 2rem; font-weight: 700;">14 Days</div>
-                <div style="color: var(--text-muted); font-size: 0.9rem;">Loan Period</div>
+
+            <!-- View Toggle -->
+            <div
+                style="display: flex; gap: 0.5rem; background: var(--bg-body); padding: 0.25rem; border-radius: var(--radius-md);">
+                <button id="gridViewBtn" class="btn btn-sm"
+                    style="background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onclick="switchView('grid')">
+                    <i data-lucide="grid-3x3" style="width: 18px; height: 18px;"></i>
+                </button>
+                <button id="listViewBtn" class="btn btn-sm btn-secondary" onclick="switchView('list')">
+                    <i data-lucide="list" style="width: 18px; height: 18px;"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Books Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;"
-        id="booksGrid">
-        {% for book in books %}
-        <div class="book-card" data-title="{{ book.Title|lower }}" data-author="{{ book.Author|lower }}"
-            data-genre="{{ book.Genre|lower }}">
-            <div
-                style="position: relative; overflow: hidden; border-radius: var(--radius-md) var(--radius-md) 0 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 320px; display: flex; align-items: center; justify-content: center;">
-                {% if book.Image %}
-                <img src="{{ book.Image.url }}" alt="{{ book.Title }}"
-                    style="width: 100%; height: 100%; object-fit: cover;">
-                {% else %}
-                <div style="font-size: 4rem; color: white; opacity: 0.8;">📚</div>
-                {% endif %}
-                <div
-                    style="position: absolute; top: 1rem; right: 1rem; background: rgba(16, 185, 129, 0.95); color: white; padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;">
-                    <span style="width: 8px; height: 8px; background: white; border-radius: 50%;"></span>
-                    Available
+    <!-- Stats Bar -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="stat-card hover-lift" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon"
+                    style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 48px; height: 48px;">
+                    <i data-lucide="check-circle" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.75rem; font-weight: 800;">{{ books|length }}</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Available Now</div>
                 </div>
             </div>
-            <div style="padding: 1.25rem;">
-                <h3
-                    style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); line-height: 1.4;">
-                    {{ book.Title }}</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem;">by {{ book.Author }}
-                </p>
+        </div>
 
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        <div class="stat-card hover-lift" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon"
+                    style="background: rgba(99, 102, 241, 0.1); color: var(--primary); width: 48px; height: 48px;">
+                    <i data-lucide="book-open" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.75rem; font-weight: 800;">Ready</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">To Borrow</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card hover-lift" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon"
+                    style="background: rgba(245, 158, 11, 0.1); color: var(--warning); width: 48px; height: 48px;">
+                    <i data-lucide="clock" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.75rem; font-weight: 800;">14 Days</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Loan Period</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books Grid View -->
+    <div id="gridView" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem;">
+        {% for book in books %}
+        <div class="book-card hover-lift" data-title="{{ book.Title|lower }}" data-author="{{ book.Author|lower }}"
+            data-genre="{{ book.Genre|lower }}" data-price="{{ book.Price }}"
+            data-date="{{ book.Published_date|date:'Y-m-d' }}"
+            style="background: white; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s; cursor: pointer;">
+
+            <!-- Book Cover with Overlay -->
+            <div
+                style="position: relative; overflow: hidden; height: 350px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                {% if book.Image %}
+                <img src="{{ book.Image.url }}" alt="{{ book.Title }}"
+                    style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s;"
+                    onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                {% else %}
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <i data-lucide="book" style="width: 100px; height: 100px; color: white; opacity: 0.4;"></i>
+                </div>
+                {% endif %}
+
+                <!-- Status Badge -->
+                <div
+                    style="position: absolute; top: 1rem; right: 1rem; background: rgba(16, 185, 129, 0.95); backdrop-filter: blur(10px); color: white; padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <span
+                        style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 2s infinite;"></span>
+                    Available
+                </div>
+
+                <!-- Genre Badge -->
+                <div
+                    style="position: absolute; bottom: 1rem; left: 1rem; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); color: white; padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600;">
+                    {{ book.Genre|title }}
+                </div>
+
+                <!-- Quick View Overlay -->
+                <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;"
+                    onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                    <button onclick="window.location.href='{% url 'borrow_book' book.id %}'" class="btn btn-primary"
+                        style="transform: scale(1.1);">
+                        <i data-lucide="book-plus" style="width: 20px; height: 20px;"></i>
+                        Borrow Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Book Details -->
+            <div style="padding: 1.5rem;">
+                <h3
+                    style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main);">
+                    {{ book.Title }}
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; font-weight: 500;">by
+                    {{ book.Author }}</p>
+
+                <!-- Book Meta -->
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
                     <span class="role-badge"
-                        style="background: rgba(99, 102, 241, 0.1); color: var(--primary); font-size: 0.8rem;">
-                        {{ book.Genre|title }}
+                        style="background: rgba(99, 102, 241, 0.1); color: var(--primary); font-size: 0.8rem; display: flex; align-items: center; gap: 0.25rem;">
+                        <i data-lucide="calendar" style="width: 12px; height: 12px;"></i>
+                        {{ book.Published_date|date:"Y" }}
                     </span>
                     <span class="role-badge"
-                        style="background: rgba(245, 158, 11, 0.1); color: var(--warning); font-size: 0.8rem;">
+                        style="background: rgba(245, 158, 11, 0.1); color: var(--warning); font-size: 0.8rem; display: flex; align-items: center; gap: 0.25rem;">
+                        <i data-lucide="file-text" style="width: 12px; height: 12px;"></i>
                         {{ book.Pages }} pages
                     </span>
                 </div>
 
+                <!-- Price and Action -->
                 <div
-                    style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+                    style="display: flex; justify-content: space-between; align-items: center; padding-top: 1.25rem; border-top: 2px solid var(--border-light);">
                     <div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.2rem;">Published
+                        <div
+                            style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Price</div>
+                        <div style="font-weight: 800; color: var(--primary); font-size: 1.25rem;">PKR {{ book.Price }}
                         </div>
-                        <div style="font-weight: 600; font-size: 0.9rem;">{{ book.Published_date|date:"Y" }}</div>
                     </div>
                     <button onclick="window.location.href='{% url 'borrow_book' book.id %}'" class="btn btn-primary"
-                        style="padding: 0.6rem 1.2rem; font-size: 0.9rem;">
-                        Borrow Now
+                        style="padding: 0.75rem 1.25rem; font-weight: 700;">
+                        <i data-lucide="book-plus" style="width: 18px; height: 18px;"></i>
+                        Borrow
                     </button>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
-            <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📚</div>
-            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">No Available Books</h3>
-            <p style="color: var(--text-muted);">There are currently no books available for borrowing. Please check back
-                later.</p>
+        <div class="empty-state" style="grid-column: 1 / -1; padding: 5rem 2rem;">
+            <div class="empty-state-icon">
+                <i data-lucide="book-x" style="width: 80px; height: 80px;"></i>
+            </div>
+            <h3 class="empty-state-title" style="font-size: 2rem;">No Books Found</h3>
+            <p class="empty-state-description" style="font-size: 1.1rem;">Try adjusting your filters or search terms</p>
+            <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="resetFilters()">
+                <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
+                Reset Filters
+            </button>
         </div>
         {% endfor %}
     </div>
+
+    <!-- Books List View (Hidden by default) -->
+    <div id="listView" style="display: none;">
+        <div
+            style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
+            {% for book in books %}
+            <div class="book-card" data-title="{{ book.Title|lower }}" data-author="{{ book.Author|lower }}"
+                data-genre="{{ book.Genre|lower }}" data-price="{{ book.Price }}"
+                data-date="{{ book.Published_date|date:'Y-m-d' }}"
+                style="display: flex; gap: 2rem; padding: 1.5rem; border-bottom: 1px solid var(--border-light); transition: all 0.3s; cursor: pointer;"
+                onmouseover="this.style.background='var(--bg-body)'" onmouseout="this.style.background='white'">
+
+                <!-- Book Cover Thumbnail -->
+                <div
+                    style="width: 100px; height: 140px; flex-shrink: 0; border-radius: var(--radius-md); overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    {% if book.Image %}
+                    <img src="{{ book.Image.url }}" alt="{{ book.Title }}"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                    <div
+                        style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="book" style="width: 40px; height: 40px; color: white; opacity: 0.5;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Book Details -->
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3
+                            style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
+                            {{ book.Title }}</h3>
+                        <p
+                            style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.75rem; font-weight: 500;">
+                            by {{ book.Author }}</p>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <span class="role-badge"
+                                style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                                {{ book.Genre|title }}
+                            </span>
+                            <span class="role-badge"
+                                style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                                {{ book.Pages }} pages
+                            </span>
+                            <span class="role-badge"
+                                style="background: rgba(16, 185, 129, 0.1); color: var(--success);">{{ book.Published_date|date:"Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price and Action -->
+                <div
+                    style="display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; min-width: 150px;">
+                    <div style="text-align: right;">
+                        <div
+                            style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+                            Price</div>
+                        <div style="font-weight: 800; color: var(--primary); font-size: 1.5rem;">PKR {{ book.Price }}
+                        </div>
+                    </div>
+                    <button onclick="window.location.href='{% url 'borrow_book' book.id %}'" class="btn btn-primary"
+                        style="width: 100%;">
+                        <i data-lucide="book-plus" style="width: 18px; height: 18px;"></i>
+                        Borrow Now
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
-<style>
-    .book-card {
-        background: white;
-        border-radius: var(--radius-md);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        overflow: hidden;
-    }
-
-    .book-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .role-badge {
-        display: inline-block;
-        padding: 0.3rem 0.7rem;
-        border-radius: var(--radius-sm);
-        font-weight: 500;
-    }
-</style>
-
 <script>
-    // Search functionality
+    // Enhanced Search with Debounce
     const searchInput = document.getElementById('searchInput');
-    const booksGrid = document.getElementById('booksGrid');
-    const bookCards = document.querySelectorAll('.book-card');
+    const genreFilter = document.getElementById('genreFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    let allBooks = Array.from(document.querySelectorAll('.book-card'));
 
-    searchInput.addEventListener('input', function (e) {
-        const searchTerm = e.target.value.toLowerCase();
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    }
 
-        bookCards.forEach(card => {
-            const title = card.dataset.title;
-            const author = card.dataset.author;
-            const genre = card.dataset.genre;
+    const performSearch = debounce(() => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedGenre = genreFilter.value.toLowerCase();
 
-            if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
+        allBooks.forEach(card => {
+            const title = card.dataset.title || '';
+            const author = card.dataset.author || '';
+            const genre = card.dataset.genre || '';
+
+            const matchesSearch = title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm);
+            const matchesGenre = !selectedGenre || genre === selectedGenre;
+
+            card.style.display = (matchesSearch && matchesGenre) ? 'block' : 'none';
+        });
+
+        performSort();
+    }, 300);
+
+    function performSort() {
+        const sortValue = sortFilter.value;
+        const container = document.getElementById('gridView').style.display !== 'none'
+            ? document.getElementById('gridView')
+            : document.getElementById('listView');
+
+        const visibleBooks = allBooks.filter(book => book.style.display !== 'none');
+
+        visibleBooks.sort((a, b) => {
+            switch (sortValue) {
+                case 'title-asc':
+                    return a.dataset.title.localeCompare(b.dataset.title);
+                case 'title-desc':
+                    return b.dataset.title.localeCompare(a.dataset.title);
+                case 'author-asc':
+                    return a.dataset.author.localeCompare(b.dataset.author);
+                case 'price-low':
+                    return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                case 'price-high':
+                    return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                case 'newest':
+                    return new Date(b.dataset.date) - new Date(a.dataset.date);
+                case 'oldest':
+                    return new Date(a.dataset.date) - new Date(b.dataset.date);
+                default:
+                    return 0;
             }
         });
-    });
+
+        visibleBooks.forEach(book => container.appendChild(book));
+    }
+
+    function resetFilters() {
+        searchInput.value = '';
+        genreFilter.value = '';
+        sortFilter.value = 'newest';
+        performSearch();
+    }
+
+    function switchView(view) {
+        const gridView = document.getElementById('gridView');
+        const listView = document.getElementById('listView');
+        const gridBtn = document.getElementById('gridViewBtn');
+        const listBtn = document.getElementById('listViewBtn');
+
+        if (view === 'grid') {
+            gridView.style.display = 'grid';
+            listView.style.display = 'none';
+            gridBtn.style.background = 'white';
+            gridBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            listBtn.style.background = 'transparent';
+            listBtn.style.boxShadow = 'none';
+        } else {
+            gridView.style.display = 'none';
+            listView.style.display = 'block';
+            listBtn.style.background = 'white';
+            listBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            gridBtn.style.background = 'transparent';
+            gridBtn.style.boxShadow = 'none';
+        }
+
+        // Update allBooks reference
+        allBooks = Array.from(document.querySelectorAll('.book-card'));
+    }
+
+    searchInput.addEventListener('input', performSearch);
+    genreFilter.addEventListener('change', performSearch);
+    sortFilter.addEventListener('change', performSort);
 </script>
 {% endblock body %}

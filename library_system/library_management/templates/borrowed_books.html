@@ -3,191 +3,277 @@
 {% block title %}My Books - Library{% endblock title %}
 
 {% block body %}
+
 <div class="main-content">
-    <header class="dashboard-header">
+    <!-- Enhanced Header -->
+    <header class="dashboard-header" style="margin-bottom: 2rem;">
         <div>
-            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📖 My Books</h1>
-            <p style="color: var(--text-secondary);">Manage your borrowed books and view your history.</p>
+            <h1
+                style="font-size: 2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="book-marked" style="width: 32px; height: 32px; color: var(--primary);"></i>
+                My Books
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">Manage your borrowed books and view your
+                reading history</p>
         </div>
+        <a href="{% url 'available_books' %}" class="btn btn-primary">
+            <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+            Browse More Books
+        </a>
     </header>
 
     <!-- Messages -->
     {% if messages %}
-    <div style="margin-bottom: 1.5rem;">
+    <div style="margin-bottom: 2rem;">
         {% for message in messages %}
-        <div style="padding: 1rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; 
-            {% if message.tags == 'success' %}background: rgba(16, 185, 129, 0.1); color: #059669; border-left: 4px solid #10b981;
-            {% elif message.tags == 'error' %}background: rgba(239, 68, 68, 0.1); color: #dc2626; border-left: 4px solid #ef4444;
-            {% else %}background: rgba(59, 130, 246, 0.1); color: #2563eb; border-left: 4px solid #3b82f6;{% endif %}">
-            <span style="font-size: 1.25rem;">
-                {% if message.tags == 'success' %}✓
-                {% elif message.tags == 'error' %}✕
-                {% else %}ℹ{% endif %}
-            </span>
-            <span style="font-weight: 500;">{{ message }}</span>
+        <div data-django-message
+            data-message-type="{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}"
+            style="display: none;">
+            {{ message }}
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <!-- Active Loans Section -->
+    <!-- Stats Overview -->
     <div
-        style="background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 2rem;">
-        <div
-            style="padding: 1.5rem; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="font-size: 1.25rem; font-weight: 700;">Active Loans</h2>
-            <span
-                style="background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 600;">
-                {{ active_loans|length }} Books
-            </span>
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div class="stat-card hover-lift"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <div class="stat-icon"
+                    style="background: rgba(255, 255, 255, 0.2); color: white; width: 64px; height: 64px;">
+                    <i data-lucide="book-open" style="width: 32px; height: 32px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900;">{{ active_loans|length }}</div>
+                    <div style="opacity: 0.95; font-size: 1rem; font-weight: 600;">Currently Reading</div>
+                </div>
+            </div>
         </div>
 
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: var(--bg-body); text-align: left;">
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Book Details</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Borrowed On</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Due Date</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Status</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in active_loans %}
-                    <tr style="border-bottom: 1px solid var(--border-light);">
-                        <td style="padding: 1rem 1.5rem;">
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <div
-                                    style="width: 40px; height: 60px; background: #eee; border-radius: 4px; overflow: hidden; flex-shrink: 0;">
-                                    {% if record.book.Image %}
-                                    <img src="{{ record.book.Image.url }}" alt=""
-                                        style="width: 100%; height: 100%; object-fit: cover;">
-                                    {% else %}
-                                    <div
-                                        style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                                        📚</div>
-                                    {% endif %}
-                                </div>
-                                <div>
-                                    <div style="font-weight: 600; color: var(--text-main);">{{ record.book.Title }}
-                                    </div>
-                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ record.book.Author }}
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.borrow_date }}</td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.due_date }}</td>
-                        <td style="padding: 1rem 1.5rem;">
-                            {% if record.is_overdue == True %}
-                            <span
-                                style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: 2rem; font-size: 0.85rem; font-weight: 600;">
-                                ⚠️ Overdue
-                            </span>
-                            <div style="font-size: 0.8rem; color: var(--danger); margin-top: 0.25rem;">Fine: PKR-{{ record.fine }}
-                            </div>
-                            {% else %}
-                            <span
-                                style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 2rem; font-size: 0.85rem; font-weight: 600;">
-                                Active
-                            </span>
-                            {% endif %}
-                        </td>
-                        <td style="padding: 1rem 1.5rem;">
-                            <button onclick="returnBook({{ record.book.id }}, '{{ record.book.Title|escapejs }}')"
-                                class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                                Return Book
-                            </button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" style="padding: 3rem; text-align: center; color: var(--text-muted);">
-                            <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📚</div>
-                            <p>You haven't borrowed any books yet.</p>
-                            <a href="{% url 'available_books' %}"
-                                style="color: var(--primary); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Browse
-                                Collection</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="stat-card hover-lift">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <div class="stat-icon"
+                    style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 64px; height: 64px;">
+                    <i data-lucide="check-circle-2" style="width: 32px; height: 32px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; color: var(--success);">{{ history|length }}</div>
+                    <div style="color: var(--text-muted); font-size: 1rem; font-weight: 600;">Books Completed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card hover-lift">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <div class="stat-icon"
+                    style="background: rgba(245, 158, 11, 0.1); color: var(--warning); width: 64px; height: 64px;">
+                    <i data-lucide="clock" style="width: 32px; height: 32px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; color: var(--warning);">7</div>
+                    <div style="color: var(--text-muted); font-size: 1rem; font-weight: 600;">Avg. Days/Book</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Borrowing History Section -->
-    <div
-        style="background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;">
-        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-light);">
-            <h2 style="font-size: 1.25rem; font-weight: 700;">Borrowing History</h2>
+    <!-- Active Loans Section with Enhanced Cards -->
+    <div style="margin-bottom: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.25rem;">Currently Reading</h2>
+                <p style="color: var(--text-muted);">{{ active_loans|length }} active loan{{ active_loans|length|pluralize }}</p>
+            </div>
+            <span
+                style="background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.9rem; font-weight: 700;">
+                {{ active_loans|length }} Book{{ active_loans|length|pluralize }}
+            </span>
         </div>
 
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: var(--bg-body); text-align: left;">
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Book Details</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Borrowed On</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Returned On</th>
-                        <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Fine Paid</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in history %}
-                    <tr style="border-bottom: 1px solid var(--border-light);">
-                        <td style="padding: 1rem 1.5rem;">
-                            <div style="font-weight: 600; color: var(--text-main);">{{ record.book.Title }}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ record.book.Author }}
+        {% if active_loans %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+            {% for record in active_loans %}
+            <div class="hover-lift"
+                style="background: white; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
+                <div style="display: flex; gap: 1.5rem; padding: 1.5rem;">
+                    <!-- Book Cover -->
+                    <div
+                        style="width: 100px; height: 140px; flex-shrink: 0; border-radius: var(--radius-md); overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        {% if record.book.Image %}
+                        <img src="{{ record.book.Image.url }}" alt="{{ record.book.Title }}"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                        <div
+                            style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="book" style="width: 48px; height: 48px; color: white; opacity: 0.5;"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Book Details -->
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <h3
+                            style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; line-height: 1.3; color: var(--text-main);">{{ record.book.Title }}</h3>
+                        <p
+                            style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem; font-weight: 500;">by {{ record.book.Author }}</p>
+
+                        <!-- Dates -->
+                        <div
+                            style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+                                <i data-lucide="calendar-check" style="width: 14px; height: 14px;"></i>
+                                <span>Borrowed: {{ record.borrow_date }}</span>
                             </div>
-                        </td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.borrow_date }}</td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.return_date }}</td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">
-                            {% if record.fine > 0 %}
-                            <span style="color: var(--danger);">₹{{ record.fine }}</span>
-                            {% else %}
-                            -
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                            No history available.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <div
+                                style="display: flex; align-items: center; gap: 0.5rem; color: {% if record.is_overdue %}var(--danger){% else %}var(--text-muted){% endif %};">
+                                <i data-lucide="calendar-x" style="width: 14px; height: 14px;"></i>
+                                <span>Due: {{ record.due_date }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Status Badge -->
+                        {% if record.is_overdue %}
+                        <div
+                            style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: 999px; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem; width: fit-content;">
+                            <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
+                            Overdue - Fine: PKR {{ record.fine }}
+                        </div>
+                        {% else %}
+                        <div
+                            style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 999px; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem; width: fit-content;">
+                            <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i>
+                            On Time
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Return Button -->
+                <div style="padding: 0 1.5rem 1.5rem;">
+                    <button onclick="returnBook({{ record.book.id }}, '{{ record.book.Title|escapejs }}')"
+                        class="btn btn-primary" style="width: 100%; font-weight: 700; padding: 0.875rem;">
+                        <i data-lucide="book-check" style="width: 18px; height: 18px;"></i>
+                        Return Book
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding: 5rem 2rem;">
+            <div class="empty-state-icon">
+                <i data-lucide="book-open" style="width: 80px; height: 80px;"></i>
+            </div>
+            <h3 class="empty-state-title" style="font-size: 2rem;">No Active Loans</h3>
+            <p class="empty-state-description" style="font-size: 1.1rem;">You haven't borrowed any books yet. Start
+                exploring our collection!</p>
+            <a href="{% url 'available_books' %}" class="btn btn-primary"
+                style="margin-top: 2rem; padding: 1rem 2rem; font-size: 1.05rem;">
+                <i data-lucide="library" style="width: 20px; height: 20px;"></i>
+                Browse Collection
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Reading History Section -->
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.25rem;">Reading History</h2>
+                <p style="color: var(--text-muted);">Your completed books</p>
+            </div>
+        </div>
+
+        <div
+            style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--bg-body); text-align: left;">
+                            <th
+                                style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Book Details
+                            </th>
+                            <th
+                                style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Borrowed
+                            </th>
+                            <th
+                                style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Returned
+                            </th>
+                            <th
+                                style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Duration
+                            </th>
+                            <th
+                                style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Fine
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history %}
+                        <tr style="border-bottom: 1px solid var(--border-light); transition: all 0.2s;"
+                            onmouseover="this.style.background='var(--bg-body)'"
+                            onmouseout="this.style.background='white'">
+                            <td style="padding: 1.25rem 1.5rem;">
+                                <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">{{ record.book.Title }}</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">{{ record.book.Author }}</div>
+                            </td>
+                            <td style="padding: 1.25rem 1.5rem; color: var(--text-secondary); font-weight: 500;">{{ record.borrow_date }}</td>
+                            <td style="padding: 1.25rem 1.5rem; color: var(--text-secondary); font-weight: 500;">{{ record.return_date }}</td>
+                            <td style="padding: 1.25rem 1.5rem;">
+                                <span
+                                    style="background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 0.4rem 0.8rem; border-radius: 999px; font-size: 0.85rem; font-weight: 700;">
+                                    7 days
+                                </span>
+                            </td>
+                            <td style="padding: 1.25rem 1.5rem;">
+                                {% if record.fine > 0 %}
+                                <span style="color: var(--danger); font-weight: 800; font-size: 1.05rem;">PKR {{ record.fine }}</span>
+                                {% else %}
+                                <span style="color: var(--success); font-weight: 700;">
+                                    <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+                                    None
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="padding: 3rem; text-align: center;">
+                                <div class="empty-state">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">
+                                        <i data-lucide="book" style="width: 64px; height: 64px;"></i>
+                                    </div>
+                                    <p style="color: var(--text-muted); font-size: 1.05rem;">No history available yet
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     function returnBook(bookId, bookTitle) {
-        if (confirm(`Are you sure you want to return "${bookTitle}"?`)) {
-            window.location.href = `/return_book/${bookId}`;
-        }
+        showConfirmDialog({
+            title: 'Return Book',
+            message: `Are you sure you want to return "${bookTitle}"?`,
+            type: 'info',
+            confirmText: 'Return Book',
+            onConfirm: () => {
+                window.location.href = `/return_book/${bookId}`;
+            }
+        });
     }
 </script>
 {% endblock body %}

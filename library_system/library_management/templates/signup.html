@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Library - Library Management System</title>
     <link rel="stylesheet" href="{% static 'library_management/premium_style.css' %}">
+    <link rel="stylesheet" href="{% static 'library_management/enhanced_ui.css' %}">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -90,8 +93,10 @@
                         <input type="date" name="dob" id="dob" class="form-control">
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create
-                        Account</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i data-lucide="user-plus" style="width: 18px; height: 18px;"></i>
+                        Create Account
+                    </button>
 
                     <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
                         Already have an account? <a href="{% url 'login' %}"
@@ -123,6 +128,10 @@
                 document.getElementById('initial_id').required = false;
             }
         }
+    </script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
     </script>
 </body>
 

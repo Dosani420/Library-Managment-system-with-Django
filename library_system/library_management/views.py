@@ -116,6 +116,31 @@ def user(request):
     else:
         return redirect('/login/')
 
+def password_reset(request):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        if request.method == 'POST':
+            current = request.POST['current_pass']
+            new = request.POST['new_pass']
+            confirm = request.POST['confirm_pass']
+            if user.check_password(current):
+                if new == confirm:
+                    user.set_password(new)
+                    user.save()
+                    messages.success(request, 'Password changed successfully.')
+                    return redirect('/home/')
+                else:
+                    messages.error(request, 'New password and confirm password does not match.')
+                    return render(request, 'password_reset.html')
+            else:
+                messages.error(request, 'Current password is incorrect.')
+                return render(request, 'password_reset.html')
+        else:
+            return render(request, 'password_reset.html')
+    else:
+        return redirect('/login/')
+
+
 
 def staff_dashboard(request):
     if request.session.get('is_logged_in'):
@@ -322,6 +347,59 @@ def my_books(request):
     else:
         return redirect('/login/')
 
+def member_history(request):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        history = []
+        try:
+            member = Member.objects.get(user=user)
+            
+            all_records = BorrowRecord.objects.filter(borrower=member).order_by('borrow_date')
+            
+            for record in all_records:
+                history.append(record)
+            
+            context = {
+                'history': history
+            }
+            
+            return render(request, 'member_history.html', context)
+            
+        except Member.DoesNotExist:
+            messages.error(request, 'Member profile not found.')
+            return redirect('/home/')
+    else:
+        return redirect('/login/')
+
+def member_fine(request):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id=request.session['user_id'])
+        fines = []
+        total_fines = 0
+        
+        try:
+            member= Member.objects.get(user=user)
+
+            all_records = BorrowRecord.objects.filter(borrower=member).order_by('borrow_date')
+            for record in all_records:
+                if record.fine > 0:
+                    total_fines += record.fine
+                    fines.append(record)
+                
+            context = {
+                'fines':fines,
+                'total_fines': total_fines,
+                'total_books':len(fines)
+            }
+
+            return render(request, 'members_fines.html',context)
+
+        except Member.DoesNotExit:
+            messages.error(request, 'Member profile not found')
+            return redirect('/home/')
+    else:
+        return redirect('/login/')
+
 def return_book(request, book_id):
     if request.session.get('is_logged_in'):
         try:
@@ -329,7 +407,7 @@ def return_book(request, book_id):
             user = User.objects.get(id=request.session['user_id'])
             member = Member.objects.get(user=user)
             
-            borrow_record = BorrowRecord.objects.get(book=book, borrower=member, return_date__isnull=True)
+            borrow_record = BorrowRecord.objects.get(book=book, borrower=member,is_returned=False)
             
             today = date.today()
             if today > borrow_record.due_date:
@@ -346,7 +424,7 @@ def return_book(request, book_id):
             
             messages.success(request, f'Successfully returned "{book.Title}".')
             if borrow_record.fine > 0:
-                messages.warning(request, f'Book returned with a fine of ₹{borrow_record.fine}.')
+                messages.warning(request, f'Book returned with a fine of PKR {borrow_record.fine}.')
                 
         except (Book.DoesNotExist, Member.DoesNotExist, BorrowRecord.DoesNotExist):
             messages.error(request, 'Error returning book. Record not found.')

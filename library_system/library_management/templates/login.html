@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Library Management System</title>
     <link rel="stylesheet" href="{% static 'library_management/premium_style.css' %}">
+    <link rel="stylesheet" href="{% static 'library_management/enhanced_ui.css' %}">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -40,8 +43,10 @@
                             required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Sign
-                        In</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+                        Sign In
+                    </button>
 
                     <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
                         Don't have an account? <a href="{% url 'signup' %}"
@@ -59,6 +64,10 @@
             </div>
         </div>
     </div>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

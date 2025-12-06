@@ -7,130 +7,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Staff Dashboard - Library{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'library_management/premium_style.css' %}">
-    <style>
-        /* Sidebar Collapse Styles */
-        body.collapsed .sidebar {
-            width: 80px;
-        }
+    <link rel="stylesheet" href="{% static 'library_management/enhanced_ui.css' %}">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-        body.collapsed .main-content {
-            margin-left: 80px;
-        }
-
-        body.collapsed .sidebar .logo-text,
-        body.collapsed .sidebar .nav-text {
-            display: none;
-        }
-
-        body.collapsed .sidebar .sidebar-logo {
-            justify-content: center;
-            padding: 0;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        body.collapsed .sidebar .nav-item {
-            justify-content: center;
-            padding: 0.875rem 0;
-        }
-
-        body.collapsed .sidebar .nav-item span:first-child {
-            margin-right: 0;
-            font-size: 1.5rem;
-        }
-
-        body.collapsed .sidebar-logo button {
-            margin-left: 0 !important;
-        }
-
-        /* Profile Dropdown Styles */
-        .profile-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .profile-trigger {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 1px solid var(--border-light);
-        }
-
-        .dropdown-content a {
-            color: var(--text-main);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 0.9rem;
-        }
-
-        .dropdown-content a:hover {
-            background-color: var(--bg-body);
-            color: var(--primary);
-        }
-
-        .show {
-            display: block;
-        }
-
-        /* Footer Styles */
-        .dashboard-footer {
-            margin-top: auto;
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border-light);
-        }
-    </style>
 </head>
 
 <body>
     <div class="dashboard-layout">
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar" style="background: #1e293b;">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo">
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: white;">
-                    <span>🛡️</span> <span class="logo-text">LibStaff</span>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="shield" style="width: 24px; height: 24px; color: var(--primary);"></i>
+                    <span class="logo-text">LibStaff</span>
                 </div>
                 <button id="sidebarToggle"
-                    style="background: none; border: none; cursor: pointer; color: var(--text-muted);">
-                    ☰
+                    style="background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0.5rem;">
+                    <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
                 </button>
             </div>
 
             <nav>
-                <a href="{% url 'staff_dashboard' %}" class="nav-item">
-                    <span>📊</span> <span class="nav-text">Dashboard</span>
+                <a href="{% url 'staff_dashboard' %}" class="nav-item active">
+                    <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Dashboard</span>
                 </a>
                 <a href="{% url 'manage_books' %}" class="nav-item">
-                    <span>📚</span> <span class="nav-text">Manage Books</span>
-                </a>
-                <a href="{% url 'add_book' %}" class="nav-item">
-                    <span>➕</span> <span class="nav-text">Add Book</span>
+                    <i data-lucide="book" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Manage Books</span>
                 </a>
                 <a href="#" class="nav-item">
-                    <span>👥</span> <span class="nav-text">Members</span>
+                    <i data-lucide="users" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Manage Members</span>
                 </a>
                 <a href="#" class="nav-item">
-                    <span>🔄</span> <span class="nav-text">Transactions</span>
+                    <i data-lucide="book-plus" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Issue Book</span>
                 </a>
                 <a href="#" class="nav-item">
-                    <span>⚙️</span> <span class="nav-text">Settings</span>
+                    <i data-lucide="book-minus" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Return Book</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="history" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">History</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="bar-chart" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Reports</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
+                    <span class="nav-text">Settings</span>
                 </a>
             </nav>
         </aside>
@@ -143,13 +72,21 @@
                     <div class="profile-trigger" onclick="toggleDropdown()">
                         <div
                             style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; overflow: hidden;">
+                            {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" alt="Profile"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
                             {{ user.first_name|slice:":1"|default:"S" }}
+                            {% endif %}
                         </div>
-                        <span style="font-weight: 600; font-size: 0.9rem;">{{ user.first_name }} (Staff)</span>
-                        <span style="font-size: 0.8rem;">▼</span>
+                        <span style="font-weight: 600; font-size: 0.9rem;">{{ user.first_name }}</span>
+                        <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i>
                     </div>
                     <div id="myDropdown" class="dropdown-content">
                         <a href="#">My Profile</a>
+                        <a href="{% url 'forget_password' %}">Change Password</a>
+                        <a href="#">Help & Support</a>
+                        <div style="border-top: 1px solid var(--border-light); margin: 0.2rem 0;"></div>
                         <a href="{% url 'logout' %}" style="color: var(--danger);">Logout</a>
                     </div>
                 </div>
@@ -160,7 +97,7 @@
 
             <!-- Footer -->
             <footer class="dashboard-footer">
-                <p>&copy; {% now "Y" %} Library Management System. Staff Portal.</p>
+                <p>&copy; {% now "Y" %} Library Management System. All rights reserved.</p>
             </footer>
         </main>
     </div>
@@ -171,6 +108,7 @@
         const toggleBtn = document.getElementById('sidebarToggle');
         const body = document.body;
 
+        // Check local storage
         if (localStorage.getItem('sidebar-collapsed') === 'true') {
             body.classList.add('collapsed');
         }
@@ -180,14 +118,17 @@
             localStorage.setItem('sidebar-collapsed', body.classList.contains('collapsed'));
         });
 
+        // Dropdown Toggle
         function toggleDropdown() {
             document.getElementById("myDropdown").classList.toggle("show");
         }
 
+        // Close dropdown if clicked outside
         window.onclick = function (event) {
             if (!event.target.closest('.profile-trigger')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
                     var openDropdown = dropdowns[i];
                     if (openDropdown.classList.contains('show')) {
                         openDropdown.classList.remove('show');
@@ -195,6 +136,11 @@
                 }
             }
         }
+    </script>
+    <script src="{% static 'library_management/enhanced_ui.js' %}"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
     </script>
 </body>
 

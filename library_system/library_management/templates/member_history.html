@@ -1,0 +1,64 @@
+{% extends 'member_base.html' %}
+
+{% block title %}
+History
+{% endblock title %}
+
+
+
+{% block body %}
+
+    <div
+        style="background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-light);">
+            <h2 style="font-size: 1.25rem; font-weight: 700;">Borrowing History</h2>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: var(--bg-body); text-align: left;">
+                        <th
+                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Book Details</th>
+                        <th
+                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Borrowed On</th>
+                        <th
+                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Returned On</th>
+                        <th
+                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Fine Paid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in history %}
+                    <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 1rem 1.5rem;">
+                            <div style="font-weight: 600; color: var(--text-main);">{{ record.book.Title }}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ record.book.Author }}
+                            </div>
+                        </td>
+                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.borrow_date }}</td>
+                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.return_date }}</td>
+                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">
+                            {% if record.fine > 0 %}
+                            <span style="color: var(--danger);">₹{{ record.fine }}</span>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                            No history available.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock body %}

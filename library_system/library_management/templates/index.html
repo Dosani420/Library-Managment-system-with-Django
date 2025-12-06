@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Management System - Your Digital Library</title>
     <link rel="stylesheet" href="{% static 'library_management/premium_style.css' %}">
+    <link rel="stylesheet" href="{% static 'library_management/enhanced_ui.css' %}">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -18,34 +21,44 @@
                 Explore a world of knowledge. Borrow books, track your reading, and manage your library account with
                 ease.
             </p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button class="btn btn-primary" onclick="window.location.href='{% url 'login' %}';">
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="window.location.href='{% url 'login' %}';" style="min-width: 140px;">
                     Sign In
                 </button>
-                <button class="btn btn-secondary" onclick="window.location.href='{% url 'signup' %}';">
+                <button class="btn btn-secondary" onclick="window.location.href='{% url 'signup' %}';" style="min-width: 140px;">
                     Join Library
                 </button>
             </div>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h3>📚 Vast Collection</h3>
-                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Access thousands of books across all
-                        genres.</p>
+                    <div style="width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <i data-lucide="library" style="width: 24px; height: 24px; color: var(--primary);"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Vast Collection</h3>
+                    <p style="color: var(--text-muted);">Access thousands of books across all genres.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>🔖 Track Your Reading</h3>
-                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Keep track of books you've borrowed and
-                        read.</p>
+                    <div style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <i data-lucide="bookmark-check" style="width: 24px; height: 24px; color: var(--success);"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Track Your Reading</h3>
+                    <p style="color: var(--text-muted);">Keep track of books you've borrowed and read.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>📖 Easy Discovery</h3>
-                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Find your next favorite book in seconds.
-                    </p>
+                    <div style="width: 48px; height: 48px; background: rgba(236, 72, 153, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <i data-lucide="search" style="width: 24px; height: 24px; color: var(--accent);"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Easy Discovery</h3>
+                    <p style="color: var(--text-muted);">Find your next favorite book in seconds.</p>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

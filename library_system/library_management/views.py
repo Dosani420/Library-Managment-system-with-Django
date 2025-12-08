@@ -21,6 +21,9 @@ def _login(request):
             request.session['is_logged_in'] = True
             
             if Staff.objects.filter(user=user).exists():
+                staff = Staff.objects.get(user=user)
+                staff.login_time = datetime.now()
+                staff.save()
                 return redirect('/staff_dashboard/')
             else:
                 return redirect('/home/')
@@ -160,7 +163,7 @@ def staff_dashboard(request):
             'total_books': total_books,
             'total_members': total_members,
             'active_loans': active_loans,
-            'overdue_books': overdue_books
+            'overdue_books': overdue_books,
         }
         return render(request, 'staff_dashboard.html', context)
     else:
@@ -435,13 +438,47 @@ def return_book(request, book_id):
 
 def manage_members(request):
     members = Member.objects.all()
-    active = Member.objects.filter(status='Active').count()
-    inactive = Member.objects.filter(status='Inactive').count()
-    blocked = Member.objects.filter(status='Blocked').count()
-    books_borrowed = BorrowRecord.objects.filter(is_returned = False)
+    blocked = Member.objects.filter(is_blocked = True).count()
+    for member in members:
+        member.borrow_count=BorrowRecord.objects.filter(borrower = member,is_returned=False).count()
+    
     content = {'members':members,
-               'active': active,
-               'inactive':inactive,
-               'blocked':blocked,
-               'books':books_borrowed}
+               'blocked':blocked,}
     return render(request,'manage_members.html',content)
+
+def edit_member_data(request,member_id):
+    if request.session.get('is_logged_in'):
+        user = User.objects.get(id = request.session['user_id'])
+        if not Staff.objects.filter(user=user):
+            return redirect('/home/')
+        else:
+            try:
+                member = Member.objects.get(id=member_id)
+                if request.method == 'POST':
+                    member_user = User.objects.get(username=member.user.username)
+                    
+                    first_name = request.POST['first_name']
+                    last_name = request.POST['last_name']
+                    email = request.POST['email']
+                    username = request.POST['username']
+                    gender = request.POST['gender']
+                    dob_str = request.POST['dob']
+                    dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+                
+                    member_user.first_name = first_name
+                    member_user.last_name = last_name
+                    member_user.email = email
+                    member_user.username = username
+                    member.gender = gender
+                    member.date_of_birth = dob
+                    member.save()
+                    member_user.save()
+                    messages.success(request,"Member's data changed!")
+                    return redirect('/manage_members/')
+                else:
+                    return render(request,'edit_member.html',{'member':member})
+            except:
+                messages.error(request,"an unexpected Error Occured!")
+                return redirect('/manage_members/')
+    else:
+        return redirect('/login/')

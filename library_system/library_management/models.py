@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from datetime import date, timedelta
+from django.utils import timezone
 
 # Create your models here.
 
@@ -30,6 +31,7 @@ class CommonInfo(models.Model):
         abstract = True
 
 class Staff(CommonInfo):
+    
     Role_choice = [
         ('Librarian', 'Librarian'),
         ('Assistant Librarian', 'Assistant Librarian'),
@@ -39,6 +41,42 @@ class Staff(CommonInfo):
     employee_id = models.CharField(max_length=50, default='STF-')
     hire_date = models.DateField(auto_now_add=True)
     role = models.CharField(max_length=50, choices=Role_choice, default='Librarian')
+    is_blocked = models.BooleanField(default=False)
+    login_time =models.DateTimeField(null=True,blank=True)
+    last_activity = models.DateTimeField(null=True,blank=True)
+    
+
+    @property
+    def status(self):
+        # If manually blocked
+        if self.is_blocked:
+            return "Blocked"
+
+        # If user never logged in
+        if not self.last_activity:
+            return "Inactive"
+
+        now = timezone.now()
+        diff = now - self.last_activity
+
+        # Online = active within last 5 minutes
+        if diff < timedelta(minutes=5):
+            return "Online"
+
+        # Away = active within last 1 hour
+        if diff < timedelta(hours=1):
+            return "Away"
+
+        # Offline = last seen within 24 hours
+        if diff < timedelta(days=1):
+            return "Offline"
+
+        # Inactive = no activity for more than 30 days
+        if diff > timedelta(days=30):
+            return "Inactive"
+
+        return "Offline"
+
     
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
@@ -48,7 +86,42 @@ class Member(CommonInfo):
     member_id = models.CharField(max_length=50, default='MBR-')
     join_date = models.DateField(auto_now_add=True)
     expiry_date = models.DateField(default=get_expiry_date)
-    status = models.CharField(max_length=50,default='Active')
+    login_time =models.TimeField(null=True,blank=True)
+    is_blocked = models.BooleanField(default=False)
+    last_activity = models.DateTimeField(null=True,blank=True)
+    borrow_count = models.IntegerField(null=True,blank=True)
+    
+    @property
+    def status(self):
+        # If manually blocked
+        if self.is_blocked:  
+            return "Blocked"
+
+        # If user never logged in
+        if not self.last_activity:
+            return "Inactive"
+
+        now = timezone.now()
+        diff = now - self.last_activity
+
+        # Online = active within last 5 minutes
+        if diff < timedelta(minutes=5):
+            return "Online"
+
+        # Away = active within last 1 hour
+        if diff < timedelta(hours=1):
+            return "Away"
+
+        # Offline = last seen within 24 hours
+        if diff < timedelta(days=1):
+            return "Offline"
+
+        # Inactive = no activity for more than 30 days
+        if diff > timedelta(days=30):
+            return "Inactive"
+
+        return "Offline"
+
     
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'

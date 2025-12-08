@@ -147,16 +147,14 @@ Manage Memebers
 
                 <!-- Status Badge -->
                 <div
-                    style="position: absolute; top: 1rem; right: 1rem; {% if member.status == 'Active' %} background: rgba(16, 185, 129, 0.95) {% else %} background: rgba(255, 145, 2, 1) {% endif %}; backdrop-filter: blur(10px); color: white; padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-                    <span
-                        style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 2s infinite;"></span>
-                    {{ member.status }}
+                    style="position: absolute; top: 1rem; right: 1rem; font-size: 0.85rem; font-weight: 700; display: flex; ">
+                    <span class="status-{{ member.status|lower }}">{{ member.status }}</span>
                 </div>
 
                 <!-- Quick View Overlay -->
                 <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;"
                     onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
-                    <button onclick="window.location.href='#'" class="btn btn-primary"
+                    <button onclick="window.location.href='{% url 'edit_member' member.id %}'" class="btn btn-primary"
                         style="transform: scale(1.1);">
                         <i data-lucide="pen" style="width: 20px; height: 20px;"></i>
                         Edit
@@ -187,11 +185,7 @@ Manage Memebers
                     <span class="role-badge"
                         style="background: rgba(245, 158, 11, 0.1); color: var(--warning); font-size: 1.25rem; display: flex; align-items: center; gap: 0.25rem;">
                         <i data-lucide="book-open" style="width: 20px; height: 20px;"></i>
-                        {% for record in books %}
-                            {% if record.borrower == member %}
-                                {{ books|length }}
-                            {% endif %}
-                        {% endfor %}
+                        {{ member.borrow_count }}
                     </span>
                 </div>
 
@@ -228,24 +222,4 @@ Manage Memebers
         {% endfor %}
     </div>
     
-<div>
-    <table border="2">
-        <thead>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Gender</th>
-            <th>ID</th>
-            <th>Action</th>
-        </thead>
-        {% for member in members %}
-        <tr>
-            <td>{{ member.user.first_name }}</td>
-            <td>{{ member.user.last_name }}</td>
-            <td>{{ member.gender }}</td>
-            <td>{{ member.member_id }}</td>
-            <td><a href="#">Edit</a>|<a href="#">Block</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
 {% endblock body %}

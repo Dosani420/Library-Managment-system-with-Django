@@ -1,0 +1,159 @@
+{% extends "staff_base.html" %}
+{% load static %}
+
+{% block title %}Edit Member - Staff Dashboard{% endblock title %}
+
+{% block body %}
+<div class="form-container" style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
+    <div class="card"
+        style="background: white; border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+
+        <div class="form-header" style="text-align: center; margin-bottom: 2.5rem;">
+            <div
+                style="width: 50px; height: 50px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                <i data-lucide="user-cog" style="width: 28px; height: 28px; color: var(--success);"></i>
+            </div>
+            <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">Edit Member
+                Profile</h1>
+            <p style="color: var(--text-secondary);">Manage account details for {{ member.user.first_name }} {{ member.user.last_name }}</p>
+        </div>
+
+        <form method="post" class="premium-form">
+            {% csrf_token %}
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <!-- Identity Section -->
+                <div class="form-column">
+                    <h3
+                        style="font-size: 1rem; font-weight: 600; color: var(--text-main); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-light);">
+                        Personal Information</h3>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="first_name"
+                                style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">First
+                                Name</label>
+                            <input type="text" name="first_name" id="first_name" value="{{ member.user.first_name }}"
+                                required
+                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="last_name"
+                                style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Last
+                                Name</label>
+                            <input type="text" name="last_name" id="last_name" value="{{ member.user.last_name }}"
+                                required
+                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="email"
+                            style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Email
+                            Address</label>
+                        <div class="input-wrapper" style="position: relative;">
+                            <i data-lucide="mail"
+                                style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
+                            <input type="email" name="email" id="email" value="{{ member.user.email }}" required
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="gender"
+                            style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Gender</label>
+                        <select name="gender" id="gender"
+                            style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background-color: white;">
+                            <option value="Male" {% if member.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if member.gender == 'Female' %}selected{% endif %}>Female</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="dob"
+                            style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Date
+                            of Birth</label>
+                        <input type="date" name="dob" id="dob" value="{{ member.date_of_birth|date:'Y-m-d' }}" required
+                            style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px;">Current Age:
+                            <strong>{{ member.get_age }} years</strong></p>
+                    </div>
+                </div>
+
+                <!-- Account Section -->
+                <div class="form-column">
+                    <h3
+                        style="font-size: 1rem; font-weight: 600; color: var(--text-main); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-light);">
+                        Account Details</h3>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="username"
+                            style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Username</label>
+                        <div class="input-wrapper" style="position: relative;">
+                            <i data-lucide="at-sign"
+                                style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
+                            <input type="text" name="username" id="username" value="{{ member.user.username }}" required
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label
+                            style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Member
+                            ID</label>
+                        <input type="text" value="{{ member.member_id }}" disabled
+                            style="width: 100%; padding: 0.75rem 1rem; background: var(--bg-body); border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; color: var(--text-muted); cursor: not-allowed;">
+                    </div>
+
+                    <div class="info-card"
+                        style="background: var(--bg-body); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;">Joined On</span>
+                            <span style="font-weight: 600; color: var(--text-main);">{{ member.join_date }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;">Expiry Date</span>
+                            <span style="font-weight: 600; color: var(--text-main);">{{ member.expiry_date }}</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <a href="#"
+                            style="color: var(--primary); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="lock" style="width: 16px; height: 16px;"></i>
+                            Reset Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions"
+                style="margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1.5rem; border-top: 1px solid var(--border-light);">
+                <a href="{% url 'manage_members' %}" class="btn btn-outline"
+                    style="padding: 0.75rem 1.5rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary"
+                    style="padding: 0.75rem 2rem; border-radius: var(--radius-md); font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="save" style="width: 18px; height: 18px;"></i>
+                    Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Include the checkbox toggle logic if needed, but for now just basic form
+    // Styling logic
+    const inputs = document.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            input.style.borderColor = 'var(--primary)';
+        });
+        input.addEventListener('blur', () => {
+            input.style.borderColor = 'var(--border-light)';
+        });
+    });
+</script>
+{% endblock body %}

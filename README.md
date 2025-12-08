@@ -131,7 +131,7 @@ The **Library Management System** is a comprehensive web application designed to
 
 4. **Navigate to project directory**
    ```bash
-   cd Sample
+   cd library_system
    ```
 
 5. **Run database migrations**
@@ -160,22 +160,21 @@ The **Library Management System** is a comprehensive web application designed to
 ## 🚀 Usage
 
 ### First-Time Setup
-
-1. **Login as Admin**
-   - Use the superuser credentials created during installation
    
-2. **Create Staff Accounts**
-   - Navigate to User Management
-   - Add staff members with roles (Admin, Librarian, Assistant Librarian)
+1. **Create Staff Accounts**
+   - Create Staff accounts through the signup page
+   - Secret Key Required
+   - default Staff account (Username: muzammil, password: 1234)
    
-3. **Add Books to Library**
+2. **Add Books to Library**
    - Go to "Manage Books"
    - Click "Add New Book"
    - Fill in book details and upload cover image
    
-4. **Register Members**
+3. **Register Members**
    - Create member accounts through the signup page
    - Members automatically get a 1-year membership
+   - Better to Use default Member (Username: jamilkalhoro, Password: 4321)
 
 ### Daily Operations
 
@@ -256,12 +255,12 @@ LMS/
 - `get_age()` - Method to calculate age
 
 ### Staff (extends CommonInfo)
-- `employee_id` - Unique staff identifier (STF-)
+- `employee_id` - Unique staff identifier (STF-) still working!
 - `hire_date` - Auto-generated hire date
 - `role` - Choice field (Librarian, Assistant Librarian, Library Admin)
 
 ### Member (extends CommonInfo)
-- `member_id` - Unique member identifier (MBR-)
+- `member_id` - Unique member identifier (MBR-) still working!
 - `join_date` - Auto-generated join date
 - `expiry_date` - Membership expiry (1 year from join date)
 

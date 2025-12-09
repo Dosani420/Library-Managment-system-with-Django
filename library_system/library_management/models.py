@@ -121,6 +121,13 @@ class Member(CommonInfo):
             return "Inactive"
 
         return "Offline"
+    
+    def average_borrow_days(self):
+        records = self.borrowrecord_set.filter(is_returned=True, borrow_duration__isnull=False)
+        if not records.exists():
+            return 0
+        total = sum(r.borrow_duration.days for r in records)
+        return total / len(records)
 
     
     def __str__(self):
@@ -168,6 +175,7 @@ class BorrowRecord(models.Model):
     is_returned = models.BooleanField(default=False)
     is_overdue = models.BooleanField(default=False)
     fine = models.IntegerField(default=0)
+    borrow_duration = models.DurationField(null=True,blank=True)
     
     def __str__(self):
         return f'{self.borrower} borrowed {self.book} on {self.borrow_date}'

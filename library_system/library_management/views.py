@@ -310,7 +310,7 @@ def borrow_book(request, book_id):
         return redirect('/login/')
 
 
-def my_books(request):
+def borrowed_books(request):
     if request.session.get('is_logged_in'):
         user = User.objects.get(id=request.session['user_id'])
         try:
@@ -337,9 +337,13 @@ def my_books(request):
                 else:
                     history.append(record)
             
+            average_days = member.average_borrow_days()
+            average_days = round(average_days,1)
+            
             context = {
                 'active_loans': active_loans,
-                'history': history
+                'history': history,
+                'average_days': average_days,
             }
 
             return render(request, 'borrowed_books.html', context)
@@ -420,6 +424,7 @@ def return_book(request, book_id):
             
             borrow_record.return_date = today
             borrow_record.is_returned = True
+            borrow_record.borrow_duration = borrow_record.return_date - borrow_record.borrow_date
             borrow_record.save()
             
             book.Status = 'available'

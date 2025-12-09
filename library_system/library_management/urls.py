@@ -31,7 +31,7 @@ urlpatterns = [
     # Members Operations URLs
     path('home/',views.user,name='user'),
     path('available_books/',views.available_books,name='available_books'),
-    path('my_books/',views.my_books,name='my_books'),
+    path('my_books/',views.borrowed_books,name='my_books'),
     path('history/',views.member_history,name='member_history'),
     path('fines/',views.member_fine,name='fines'),
 

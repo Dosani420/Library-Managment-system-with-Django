@@ -149,7 +149,7 @@
                             style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Book
                             Cover</label>
                         <div style="border: 2px dashed var(--border-light); border-radius: var(--radius-md); padding: 1rem; text-align: center; cursor: pointer; transition: all 0.2s;"
-                            onclick="document.getElementById('image').click()">
+                            data-trigger-upload="image">
                             {% if book.Image %}
                             <div style="margin-bottom: 0.5rem;">
                                 <img src="{{ book.Image.url }}" alt="Current Cover"

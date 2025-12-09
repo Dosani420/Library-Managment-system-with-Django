@@ -1,64 +1,242 @@
 {% extends 'member_base.html' %}
 
-{% block title %}
-History
-{% endblock title %}
-
-
+{% block title %}History - Library{% endblock title %}
 
 {% block body %}
-
-    <div
-        style="background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;">
-        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-light);">
-            <h2 style="font-size: 1.25rem; font-weight: 700;">Borrowing History</h2>
+<div class="main-content">
+    <!-- Enhanced Header with Search -->
+    <header class="dashboard-header" style="flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="flex: 1; min-width: 300px;">
+            <h1
+                style="font-size: 2rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="history" style="width: 32px; height: 32px; color: var(--primary);"></i>
+                Borrowing History
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">Your complete borrowing history</p>
         </div>
 
+        <!-- Search Bar -->
+        <div class="search-wrapper" style="flex: 1; min-width: 350px; max-width: 500px; position: relative;">
+            <i data-lucide="search" class="search-icon" style="width: 20px; height: 20px;"></i>
+            <input type="text" id="searchInput" placeholder="Search by book title or author..."
+                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s;">
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div style="margin-bottom: 2rem;">
+        {% for message in messages %}
+        <div data-django-message
+            data-message-type="{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}"
+            style="display: none;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Stats Overview -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="stat-card hover-lift" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon"
+                    style="background: rgba(99, 102, 241, 0.1); color: var(--primary); width: 48px; height: 48px;">
+                    <i data-lucide="book-open" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.75rem; font-weight: 800;">{{ history|length }}</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Total Records</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card hover-lift" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon"
+                    style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 48px; height: 48px;">
+                    <i data-lucide="check-circle" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.75rem; font-weight: 800;" id="returnedCount">{{ returned_count|default:"0" }}</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Returned Books</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card hover-lift" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon"
+                    style="background: rgba(239, 68, 68, 0.1); color: var(--danger); width: 48px; height: 48px;">
+                    <i data-lucide="dollar-sign" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.75rem; font-weight: 800;" id="totalFines">
+                        PKR <span id="totalFinesAmount">{{ total_fines|default:"0" }}</span>
+                    </div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Total Fines Paid</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div
+        style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <!-- Filters -->
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; flex: 1;">
+                <select id="fineFilter" class="form-control" style="width: auto; min-width: 150px;">
+                    <option value="">All Records</option>
+                    <option value="with-fine">With Fines</option>
+                    <option value="no-fine">No Fines</option>
+                </select>
+
+                <select id="sortFilter" class="form-control" style="width: auto; min-width: 150px;">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="title-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                    <option value="author-asc">Author (A-Z)</option>
+                    <option value="fine-high">Fine (High to Low)</option>
+                    <option value="fine-low">Fine (Low to High)</option>
+                </select>
+
+                <button class="btn btn-secondary" data-reset-filters>
+                    <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                    Reset
+                </button>
+            </div>
+
+            <!-- Results Count -->
+            <div style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">
+                Showing <span id="resultsCount">{{ history|length }}</span> of {{ history|length }} records
+            </div>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div
+        style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background: var(--bg-body); text-align: left;">
                         <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
                             Book Details</th>
                         <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
                             Borrowed On</th>
                         <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
                             Returned On</th>
                         <th
-                            style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            style="padding: 1.25rem 1.5rem; font-weight: 700; color: var(--text-main); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
                             Fine Paid</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="historyTableBody">
                     {% for record in history %}
-                    <tr style="border-bottom: 1px solid var(--border-light);">
-                        <td style="padding: 1rem 1.5rem;">
-                            <div style="font-weight: 600; color: var(--text-main);">{{ record.book.Title }}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ record.book.Author }}
+                    <tr class="history-row" 
+                        data-title="{{ record.book.Title|lower }}" 
+                        data-author="{{ record.book.Author|lower }}"
+                        data-fine="{{ record.fine }}"
+                        data-borrow-date="{{ record.borrow_date|date:'Y-m-d' }}"
+                        data-return-date="{{ record.return_date|date:'Y-m-d'|default:'' }}"
+                        style="border-bottom: 1px solid var(--border-light); transition: all 0.2s;">
+                        <td style="padding: 1.25rem 1.5rem;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <!-- Book Cover Thumbnail -->
+                                <div
+                                    style="width: 60px; height: 84px; flex-shrink: 0; border-radius: var(--radius-md); overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    {% if record.book.Image %}
+                                    <img src="{{ record.book.Image.url }}" alt="{{ record.book.Title }}"
+                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                    <div
+                                        style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                        <i data-lucide="book" style="width: 24px; height: 24px; color: white; opacity: 0.5;"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <!-- Book Info -->
+                                <div>
+                                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; font-size: 1rem;">
+                                        {{ record.book.Title }}
+                                    </div>
+                                    <div style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 500;">
+                                        by {{ record.book.Author }}
+                                    </div>
+                                </div>
                             </div>
                         </td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.borrow_date }}</td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ record.return_date }}</td>
-                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">
-                            {% if record.fine > 0 %}
-                            <span style="color: var(--danger);">₹{{ record.fine }}</span>
+                        <td style="padding: 1.25rem 1.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-weight: 500;">
+                                <i data-lucide="calendar-check" style="width: 16px; height: 16px; color: var(--text-muted);"></i>
+                                <span>{{ record.borrow_date|date:"M d, Y" }}</span>
+                            </div>
+                        </td>
+                        <td style="padding: 1.25rem 1.5rem;">
+                            {% if record.return_date %}
+                            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-weight: 500;">
+                                <i data-lucide="calendar-x" style="width: 16px; height: 16px; color: var(--text-muted);"></i>
+                                <span>{{ record.return_date|date:"M d, Y" }}</span>
+                            </div>
                             {% else %}
-                            -
+                            <span style="color: var(--text-muted); font-style: italic;">Not returned</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1.25rem 1.5rem;">
+                            {% if record.fine > 0 %}
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="alert-circle" style="width: 16px; height: 16px; color: var(--danger);"></i>
+                                <span style="color: var(--danger); font-weight: 800; font-size: 1.05rem;">PKR {{ record.fine }}</span>
+                            </div>
+                            {% else %}
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i>
+                                <span style="color: var(--success); font-weight: 700;">None</span>
+                            </div>
                             {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                            No history available.
+                        <td colspan="4" style="padding: 5rem 2rem;">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i data-lucide="history" style="width: 80px; height: 80px;"></i>
+                                </div>
+                                <h3 class="empty-state-title" style="font-size: 2rem;">No History Available</h3>
+                                <p class="empty-state-description" style="font-size: 1.1rem;">You haven't borrowed any books yet. Start exploring our collection!</p>
+                                <a href="{% url 'available_books' %}" class="btn btn-primary" style="margin-top: 2rem; padding: 1rem 2rem; font-size: 1.05rem;">
+                                    <i data-lucide="library" style="width: 20px; height: 20px;"></i>
+                                    Browse Books
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        <!-- Empty State for Filtered Results -->
+        <div id="noResultsMessage" style="display: none; padding: 5rem 2rem;">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i data-lucide="search-x" style="width: 80px; height: 80px;"></i>
+                </div>
+                <h3 class="empty-state-title" style="font-size: 2rem;">No Results Found</h3>
+                <p class="empty-state-description" style="font-size: 1.1rem;">Try adjusting your search or filter criteria</p>
+                <button class="btn btn-primary" style="margin-top: 2rem; padding: 1rem 2rem; font-size: 1.05rem;" data-reset-filters>
+                    <i data-lucide="rotate-ccw" style="width: 20px; height: 20px;"></i>
+                    Reset Filters
+                </button>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock body %}

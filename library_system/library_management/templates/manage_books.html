@@ -96,7 +96,7 @@
                         <div style="display: flex; gap: 0.5rem;">
                             <a href="{% url 'edit_book' book.id %}" class="btn btn-sm"
                                 style="background: rgba(59, 130, 246, 0.1); color: var(--primary); padding: 0.4rem 0.8rem;">Edit</a>
-                            <button onclick="deleteBook({{ book.id }}, '{{ book.Title|escapejs }}')" class="btn btn-sm"
+                            <button data-delete-book="{{ book.id }}" data-book-title="{{ book.Title|escapejs }}" class="btn btn-sm"
                                 style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 0.4rem 0.8rem;">Delete</button>
                         </div>
                     </td>
@@ -122,12 +122,4 @@
         </table>
     </div>
 </div>
-
-<script>
-    function deleteBook(bookId, bookTitle) {
-        if (confirm(`Are you sure you want to delete "${bookTitle}"? This action cannot be undone.`)) {
-            window.location.href = `/delete_book/${bookId}`;
-        }
-    }
-</script>
 {% endblock body %}

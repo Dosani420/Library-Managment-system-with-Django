@@ -411,6 +411,646 @@ style.textContent = `
 document.head.appendChild(style);
 
 // ========================================
+// BASE TEMPLATE FUNCTIONALITY
+// ========================================
+
+class DashboardBase {
+    static initSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebarToggle');
+        if (!sidebar || !toggleBtn) return;
+
+        const body = document.body;
+
+        // Check local storage
+        if (storage.get('sidebar-collapsed', false)) {
+            body.classList.add('collapsed');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('collapsed');
+            storage.set('sidebar-collapsed', body.classList.contains('collapsed'));
+        });
+    }
+
+    static initDropdown() {
+        const profileTrigger = document.querySelector('.profile-trigger');
+        if (!profileTrigger) return;
+
+        profileTrigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('myDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        });
+
+        // Close dropdown if clicked outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.profile-trigger') && !event.target.closest('.dropdown-content')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove('show');
+                }
+            }
+        });
+    }
+
+    static init() {
+        this.initSidebar();
+        this.initDropdown();
+    }
+}
+
+// ========================================
+// REUSABLE SEARCH & FILTER COMPONENT
+// ========================================
+
+class SearchableList {
+    constructor(options) {
+        this.container = typeof options.container === 'string' 
+            ? document.querySelector(options.container) 
+            : options.container;
+        this.itemsSelector = options.itemsSelector;
+        this.searchInput = typeof options.searchInput === 'string'
+            ? document.querySelector(options.searchInput)
+            : options.searchInput;
+        this.filters = options.filters || {};
+        this.sortSelect = typeof options.sortSelect === 'string'
+            ? document.querySelector(options.sortSelect)
+            : options.sortSelect;
+        this.emptyStateElement = options.emptyStateElement 
+            ? (typeof options.emptyStateElement === 'string'
+                ? document.querySelector(options.emptyStateElement)
+                : options.emptyStateElement)
+            : null;
+        this.resultsCountElement = options.resultsCountElement
+            ? (typeof options.resultsCountElement === 'string'
+                ? document.querySelector(options.resultsCountElement)
+                : options.resultsCountElement)
+            : null;
+        this.onUpdate = options.onUpdate || null;
+        this.searchFields = options.searchFields || ['title', 'author'];
+        this.sortOptions = options.sortOptions || {};
+
+        this.items = Array.from(document.querySelectorAll(this.itemsSelector));
+        this.init();
+    }
+
+    init() {
+        if (!this.searchInput) return;
+
+        // Debounced search
+        const debouncedSearch = debounce(() => this.performSearch(), 300);
+
+        // Event listeners
+        this.searchInput.addEventListener('input', debouncedSearch);
+
+        // Filter listeners
+        Object.values(this.filters).forEach(filter => {
+            if (filter) {
+                filter.addEventListener('change', () => this.performSearch());
+            }
+        });
+
+        // Sort listener
+        if (this.sortSelect) {
+            this.sortSelect.addEventListener('change', () => this.performSort());
+        }
+
+        // Reset button
+        const resetBtn = document.querySelector('[data-reset-filters]');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => this.resetFilters());
+        }
+    }
+
+    performSearch() {
+        const searchTerm = this.searchInput ? this.searchInput.value.toLowerCase() : '';
+        let visibleCount = 0;
+
+        this.items.forEach(item => {
+            let matchesSearch = true;
+            let matchesFilters = true;
+
+            // Search matching
+            if (searchTerm) {
+                matchesSearch = this.searchFields.some(field => {
+                    const value = item.dataset[field] || '';
+                    return value.toLowerCase().includes(searchTerm);
+                });
+            }
+
+            // Filter matching
+            Object.entries(this.filters).forEach(([key, filterElement]) => {
+                if (filterElement && filterElement.value) {
+                    const filterValue = filterElement.value.toLowerCase();
+                    const itemValue = (item.dataset[key] || '').toLowerCase();
+                    
+                    if (key === 'fine') {
+                        // Special handling for fine filter
+                        const fine = parseFloat(item.dataset.fine) || 0;
+                        if (filterValue === 'with-fine') {
+                            matchesFilters = matchesFilters && fine > 0;
+                        } else if (filterValue === 'no-fine') {
+                            matchesFilters = matchesFilters && fine === 0;
+                        }
+                    } else if (key === 'status') {
+                        // Special handling for status filter
+                        const status = (item.dataset.status || '').toLowerCase();
+                        matchesFilters = matchesFilters && (!filterValue || status === filterValue);
+                    } else {
+                        matchesFilters = matchesFilters && (!filterValue || itemValue === filterValue);
+                    }
+                }
+            });
+
+            // Show/hide item
+            if (matchesSearch && matchesFilters) {
+                item.style.display = '';
+                item.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+                item.classList.add('hidden');
+            }
+        });
+
+        // Update results count
+        if (this.resultsCountElement) {
+            this.resultsCountElement.textContent = visibleCount;
+        }
+
+        // Show/hide empty state
+        if (this.emptyStateElement) {
+            if (visibleCount === 0 && this.items.length > 0) {
+                if (this.container) this.container.style.display = 'none';
+                this.emptyStateElement.style.display = 'block';
+            } else {
+                if (this.container) this.container.style.display = '';
+                this.emptyStateElement.style.display = 'none';
+            }
+        }
+
+        // Callback
+        if (this.onUpdate) {
+            this.onUpdate(visibleCount, this.items.filter(item => !item.classList.contains('hidden')));
+        }
+
+        // Perform sort after filtering
+        this.performSort();
+    }
+
+    performSort() {
+        if (!this.sortSelect) return;
+
+        const sortValue = this.sortSelect.value;
+        const visibleItems = this.items.filter(item => !item.classList.contains('hidden'));
+
+        visibleItems.sort((a, b) => {
+            // Use custom sort options if provided
+            if (this.sortOptions[sortValue]) {
+                return this.sortOptions[sortValue](a, b);
+            }
+
+            // Default sort options
+            switch (sortValue) {
+                case 'title-asc':
+                    return (a.dataset.title || '').localeCompare(b.dataset.title || '');
+                case 'title-desc':
+                    return (b.dataset.title || '').localeCompare(a.dataset.title || '');
+                case 'author-asc':
+                    return (a.dataset.author || '').localeCompare(b.dataset.author || '');
+                case 'price-low':
+                    return parseFloat(a.dataset.price || 0) - parseFloat(b.dataset.price || 0);
+                case 'price-high':
+                    return parseFloat(b.dataset.price || 0) - parseFloat(a.dataset.price || 0);
+                case 'fine-high':
+                    return parseFloat(b.dataset.fine || 0) - parseFloat(a.dataset.fine || 0);
+                case 'fine-low':
+                    return parseFloat(a.dataset.fine || 0) - parseFloat(b.dataset.fine || 0);
+                case 'newest':
+                    return new Date(b.dataset.date || b.dataset.borrowDate || 0) - new Date(a.dataset.date || a.dataset.borrowDate || 0);
+                case 'oldest':
+                    return new Date(a.dataset.date || a.dataset.borrowDate || 0) - new Date(b.dataset.date || b.dataset.borrowDate || 0);
+                default:
+                    return 0;
+            }
+        });
+
+        // Re-append sorted items
+        visibleItems.forEach(item => {
+            if (this.container && this.container.nodeName !== 'TBODY') {
+                this.container.appendChild(item);
+            } else if (this.container && this.container.nodeName === 'TBODY') {
+                // For tbody, append to the container directly
+                this.container.appendChild(item);
+            } else {
+                // Fallback to parent
+                const parent = item.parentElement;
+                if (parent) {
+                    parent.appendChild(item);
+                }
+            }
+        });
+    }
+
+    resetFilters() {
+        if (this.searchInput) this.searchInput.value = '';
+        Object.values(this.filters).forEach(filter => {
+            if (filter) filter.value = '';
+        });
+        if (this.sortSelect) this.sortSelect.value = 'newest';
+        this.performSearch();
+    }
+}
+
+// ========================================
+// VIEW TOGGLE FUNCTIONALITY
+// ========================================
+
+class ViewToggle {
+    constructor(options) {
+        this.gridView = typeof options.gridView === 'string'
+            ? document.querySelector(options.gridView)
+            : options.gridView;
+        this.listView = typeof options.listView === 'string'
+            ? document.querySelector(options.listView)
+            : options.listView;
+        this.gridBtn = typeof options.gridBtn === 'string'
+            ? document.querySelector(options.gridBtn)
+            : options.gridBtn;
+        this.listBtn = typeof options.listBtn === 'string'
+            ? document.querySelector(options.listBtn)
+            : options.listBtn;
+        this.onSwitch = options.onSwitch || null;
+
+        this.init();
+    }
+
+    init() {
+        if (this.gridBtn) {
+            this.gridBtn.addEventListener('click', () => this.switchView('grid'));
+        }
+        if (this.listBtn) {
+            this.listBtn.addEventListener('click', () => this.switchView('list'));
+        }
+    }
+
+    switchView(view) {
+        if (view === 'grid') {
+            if (this.gridView) this.gridView.style.display = 'grid';
+            if (this.listView) this.listView.style.display = 'none';
+            if (this.gridBtn) {
+                this.gridBtn.style.background = 'white';
+                this.gridBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            }
+            if (this.listBtn) {
+                this.listBtn.style.background = 'transparent';
+                this.listBtn.style.boxShadow = 'none';
+            }
+        } else {
+            if (this.gridView) this.gridView.style.display = 'none';
+            if (this.listView) this.listView.style.display = 'block';
+            if (this.listBtn) {
+                this.listBtn.style.background = 'white';
+                this.listBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            }
+            if (this.gridBtn) {
+                this.gridBtn.style.background = 'transparent';
+                this.gridBtn.style.boxShadow = 'none';
+            }
+        }
+
+        if (this.onSwitch) {
+            this.onSwitch(view);
+        }
+    }
+}
+
+// ========================================
+// PAGE-SPECIFIC FUNCTIONS
+// ========================================
+
+// Delete Book Function
+function deleteBook(bookId, bookTitle) {
+    showConfirmDialog({
+        title: 'Delete Book',
+        message: `Are you sure you want to delete "${bookTitle}"? This action cannot be undone.`,
+        type: 'danger',
+        confirmText: 'Delete',
+        onConfirm: () => {
+            window.location.href = `/delete_book/${bookId}`;
+        }
+    });
+}
+
+// Return Book Function
+function returnBook(bookId, bookTitle) {
+    showConfirmDialog({
+        title: 'Return Book',
+        message: `Are you sure you want to return "${bookTitle}"?`,
+        type: 'info',
+        confirmText: 'Return Book',
+        onConfirm: () => {
+            window.location.href = `/return_book/${bookId}`;
+        }
+    });
+}
+
+// Toggle Initial ID (for signup form)
+function toggleInitialId() {
+    const roleSelect = document.getElementById('role');
+    const initialIdGroup = document.getElementById('initialIdGroup');
+    if (!roleSelect || !initialIdGroup) return;
+
+    if (roleSelect.value === 'staff') {
+        initialIdGroup.style.display = 'block';
+        const initialIdInput = document.getElementById('initial_id');
+        if (initialIdInput) initialIdInput.required = true;
+    } else {
+        initialIdGroup.style.display = 'none';
+        const initialIdInput = document.getElementById('initial_id');
+        if (initialIdInput) initialIdInput.required = false;
+    }
+}
+
+// Image Upload Trigger
+function triggerImageUpload(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) input.click();
+}
+
+// ========================================
+// PAGE INITIALIZERS
+// ========================================
+
+function initHistoryPage() {
+    const searchInput = document.getElementById('searchInput');
+    const historyTableBody = document.getElementById('historyTableBody');
+    if (!searchInput || !historyTableBody) return;
+
+    let historyList = new SearchableList({
+        container: historyTableBody,
+        itemsSelector: '.history-row',
+        searchInput: searchInput,
+        filters: {
+            fine: document.getElementById('fineFilter')
+        },
+        sortSelect: document.getElementById('sortFilter'),
+        emptyStateElement: document.getElementById('noResultsMessage'),
+        resultsCountElement: document.getElementById('resultsCount'),
+        searchFields: ['title', 'author'],
+        onUpdate: (visibleCount, visibleItems) => {
+            // Update stats
+            let totalFines = 0;
+            let returnedCount = 0;
+
+            visibleItems.forEach(row => {
+                const fine = parseFloat(row.dataset.fine) || 0;
+                totalFines += fine;
+                if (row.dataset.returnDate) {
+                    returnedCount++;
+                }
+            });
+
+            const totalFinesElement = document.getElementById('totalFinesAmount');
+            const returnedCountElement = document.getElementById('returnedCount');
+            if (totalFinesElement) totalFinesElement.textContent = totalFines;
+            if (returnedCountElement) returnedCountElement.textContent = returnedCount;
+        }
+    });
+}
+
+function initBooksPage() {
+    const searchInput = document.getElementById('searchInput');
+    const gridView = document.getElementById('gridView');
+    if (!searchInput || !gridView) return;
+
+    // Search and filter
+    let bookList = new SearchableList({
+        container: gridView,
+        itemsSelector: '.book-card',
+        searchInput: searchInput,
+        filters: {
+            genre: document.getElementById('genreFilter')
+        },
+        sortSelect: document.getElementById('sortFilter'),
+        emptyStateElement: document.querySelector('#gridView .empty-state'),
+        searchFields: ['title', 'author', 'genre']
+    });
+
+    // View toggle
+    if (document.getElementById('gridViewBtn') && document.getElementById('listViewBtn')) {
+        new ViewToggle({
+            gridView: gridView,
+            listView: document.getElementById('listView'),
+            gridBtn: document.getElementById('gridViewBtn'),
+            listBtn: document.getElementById('listViewBtn'),
+            onSwitch: () => {
+                // Update bookList items reference when view changes
+                bookList.items = Array.from(document.querySelectorAll('.book-card'));
+            }
+        });
+    }
+}
+
+function initMembersPage() {
+    const searchInput = document.getElementById('searchInput');
+    const gridView = document.getElementById('gridView');
+    if (!searchInput || !gridView) return;
+
+    // Search and filter
+    let memberList = new SearchableList({
+        container: gridView,
+        itemsSelector: '.member-card',
+        searchInput: searchInput,
+        filters: {
+            status: document.getElementById('statusFilter')
+        },
+        sortSelect: document.getElementById('sortFilter'),
+        emptyStateElement: document.querySelector('#gridView .empty-state'),
+        searchFields: ['first', 'last', 'id']
+    });
+
+    // View toggle
+    if (document.getElementById('gridViewBtn') && document.getElementById('listViewBtn')) {
+        new ViewToggle({
+            gridView: gridView,
+            listView: document.getElementById('listView'),
+            gridBtn: document.getElementById('gridViewBtn'),
+            listBtn: document.getElementById('listViewBtn'),
+            onSwitch: () => {
+                memberList.items = Array.from(document.querySelectorAll('.member-card'));
+            }
+        });
+    }
+}
+
+function initManageBooksPage() {
+    // Initialize delete book buttons
+    document.querySelectorAll('[data-delete-book]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bookId = this.dataset.deleteBook;
+            const bookTitle = this.dataset.bookTitle || 'this book';
+            deleteBook(bookId, bookTitle);
+        });
+    });
+}
+
+function initBorrowedBooksPage() {
+    // Initialize return book buttons
+    document.querySelectorAll('[data-return-book]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bookId = this.dataset.returnBook;
+            const bookTitle = this.dataset.bookTitle || 'this book';
+            returnBook(bookId, bookTitle);
+        });
+    });
+}
+
+function initSignupPage() {
+    const roleSelect = document.getElementById('role');
+    if (roleSelect) {
+        roleSelect.addEventListener('change', toggleInitialId);
+        // Initialize on page load
+        toggleInitialId();
+    }
+}
+
+function initImageUploads() {
+    // Image upload triggers
+    document.querySelectorAll('[data-trigger-upload]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const inputId = this.dataset.triggerUpload;
+            triggerImageUpload(inputId);
+        });
+    });
+}
+
+// ========================================
+// ENHANCED INITIALIZATION
+// ========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize base functionality
+    DashboardBase.init();
+
+    // Initialize scroll animations
+    observeElements();
+
+    // Add animation classes to stat cards
+    document.querySelectorAll('.stat-card').forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('fade-in');
+    });
+
+    // Add animation to feature cards
+    document.querySelectorAll('.feature-card, .book-card, .member-card').forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('scale-in');
+    });
+
+    // Convert Django messages to toasts
+    const djangoMessages = document.querySelectorAll('[data-django-message]');
+    djangoMessages.forEach(msg => {
+        const type = msg.dataset.messageType || 'info';
+        const text = msg.textContent.trim();
+        toast.show(text, type);
+        msg.remove();
+    });
+
+    // Enhanced form submission
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn && !submitBtn.disabled) {
+                showLoading(submitBtn);
+            }
+        });
+    });
+
+    // Add ripple effect to buttons
+    document.querySelectorAll('.btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+
+    // Add hover effects for table rows
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.background = 'var(--bg-body)';
+        });
+        row.addEventListener('mouseleave', function() {
+            this.style.background = '';
+        });
+    });
+
+    // Add focus effects for search inputs
+    document.querySelectorAll('.search-wrapper input').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.style.borderColor = 'var(--primary)';
+            this.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
+        });
+        input.addEventListener('blur', function() {
+            this.style.borderColor = 'var(--border-light)';
+            this.style.boxShadow = 'none';
+        });
+    });
+
+    // Initialize page-specific functionality
+    if (document.getElementById('historyTableBody')) {
+        initHistoryPage();
+    }
+    if (document.getElementById('gridView') && document.querySelector('.book-card')) {
+        initBooksPage();
+    }
+    if (document.getElementById('gridView') && document.querySelector('.member-card')) {
+        initMembersPage();
+    }
+    if (document.querySelector('[data-delete-book]')) {
+        initManageBooksPage();
+    }
+    if (document.querySelector('[data-return-book]')) {
+        initBorrowedBooksPage();
+    }
+    if (document.getElementById('role')) {
+        initSignupPage();
+    }
+    
+    initImageUploads();
+
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
+
+// ========================================
 // EXPORT FOR GLOBAL USE
 // ========================================
 
@@ -421,3 +1061,7 @@ window.hideLoading = hideLoading;
 window.copyToClipboard = copyToClipboard;
 window.smoothScrollTo = smoothScrollTo;
 window.storage = storage;
+window.deleteBook = deleteBook;
+window.returnBook = returnBook;
+window.toggleInitialId = toggleInitialId;
+window.triggerImageUpload = triggerImageUpload;

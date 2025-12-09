@@ -20,10 +20,8 @@ Manage Memebers
         <!-- Advanced Search Bar -->
         <div class="search-wrapper" style="flex: 1; min-width: 350px; max-width: 500px; position: relative;">
             <i data-lucide="search" class="search-icon" style="width: 20px; height: 20px;"></i>
-            <input type="text" id="searchInput" placeholder="Search by title, author, or genre..."
-                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s;"
-                onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 4px rgba(99, 102, 241, 0.1)'"
-                onblur="this.style.borderColor='var(--border-light)'; this.style.boxShadow='none'">
+            <input type="text" id="searchInput" placeholder="Search by member name..."
+                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s;">
         </div>
     </header>
 
@@ -62,7 +60,7 @@ Manage Memebers
                     <option value="price-high">Price (High to Low)</option>
                 </select>
 
-                <button class="btn btn-secondary" onclick="resetFilters()">
+                <button class="btn btn-secondary" data-reset-filters>
                     <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
                     Reset
                 </button>
@@ -72,10 +70,10 @@ Manage Memebers
             <div
                 style="display: flex; gap: 0.5rem; background: var(--bg-body); padding: 0.25rem; border-radius: var(--radius-md);">
                 <button id="gridViewBtn" class="btn btn-sm"
-                    style="background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onclick="switchView('grid')">
+                    style="background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     <i data-lucide="grid-3x3" style="width: 18px; height: 18px;"></i>
                 </button>
-                <button id="listViewBtn" class="btn btn-sm btn-secondary" onclick="switchView('list')">
+                <button id="listViewBtn" class="btn btn-sm btn-secondary">
                     <i data-lucide="list" style="width: 18px; height: 18px;"></i>
                 </button>
             </div>
@@ -129,7 +127,7 @@ Manage Memebers
     <div id="gridView" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem;">
         {% for member in members %}
         <div class="member-card hover-lift" data-first="{{ member.user.first_name|lower }}" data-last="{{ member.user.last_name|lower }}"
-            data-status="{{ member.status }}" data-id="{{ member.member_id }}"
+            data-status="{{ member.status|lower }}" data-id="{{ member.member_id }}"
             style="background: white; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s; cursor: pointer;">
 
             <!-- Member DP with Overlay -->
@@ -138,7 +136,7 @@ Manage Memebers
                 {% if member.Image %}
                 <img src="{{ member.Image.url }}" alt="{{ member.user.first_name }}"
                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s;"
-                    onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    class="book-cover-hover">
                 {% else %}
                 <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                     <i data-lucide="user" style="width: 100px; height: 100px; color: white; opacity: 0.4;"></i>
@@ -214,7 +212,7 @@ Manage Memebers
             </div>
             <h3 class="empty-state-title" style="font-size: 2rem;">No Books Found</h3>
             <p class="empty-state-description" style="font-size: 1.1rem;">Try adjusting your filters or search terms</p>
-            <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="resetFilters()">
+            <button class="btn btn-primary" style="margin-top: 1.5rem;" data-reset-filters>
                 <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
                 Reset Filters
             </button>

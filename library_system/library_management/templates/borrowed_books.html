@@ -152,7 +152,7 @@
 
                 <!-- Return Button -->
                 <div style="padding: 0 1.5rem 1.5rem;">
-                    <button onclick="returnBook({{ record.book.id }}, '{{ record.book.Title|escapejs }}')"
+                    <button data-return-book="{{ record.book.id }}" data-book-title="{{ record.book.Title|escapejs }}"
                         class="btn btn-primary" style="width: 100%; font-weight: 700; padding: 0.875rem;">
                         <i data-lucide="book-check" style="width: 18px; height: 18px;"></i>
                         Return Book
@@ -217,9 +217,7 @@
                     </thead>
                     <tbody>
                         {% for record in history %}
-                        <tr style="border-bottom: 1px solid var(--border-light); transition: all 0.2s;"
-                            onmouseover="this.style.background='var(--bg-body)'"
-                            onmouseout="this.style.background='white'">
+                        <tr style="border-bottom: 1px solid var(--border-light); transition: all 0.2s;">
                             <td style="padding: 1.25rem 1.5rem;">
                                 <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">{{ record.book.Title }}</div>
                                 <div style="font-size: 0.9rem; color: var(--text-secondary);">{{ record.book.Author }}</div>
@@ -264,18 +262,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    function returnBook(bookId, bookTitle) {
-        showConfirmDialog({
-            title: 'Return Book',
-            message: `Are you sure you want to return "${bookTitle}"?`,
-            type: 'info',
-            confirmText: 'Return Book',
-            onConfirm: () => {
-                window.location.href = `/return_book/${bookId}`;
-            }
-        });
-    }
-</script>
 {% endblock body %}

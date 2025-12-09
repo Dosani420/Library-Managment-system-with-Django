@@ -76,7 +76,7 @@
 
                     <div class="form-group">
                         <label class="form-label" for="role">Role</label>
-                        <select name="role" id="role" class="form-control" onchange="toggleInitialId()">
+                        <select name="role" id="role" class="form-control">
                             <option value="member">Member (Borrow Books)</option>
                             <option value="staff">Staff (Manage Library)</option>
                         </select>
@@ -115,24 +115,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function toggleInitialId() {
-            const roleSelect = document.getElementById('role');
-            const initialIdGroup = document.getElementById('initialIdGroup');
-            if (roleSelect.value === 'staff') {
-                initialIdGroup.style.display = 'block';
-                document.getElementById('initial_id').required = true;
-            } else {
-                initialIdGroup.style.display = 'none';
-                document.getElementById('initial_id').required = false;
-            }
-        }
-    </script>
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-    </script>
 </body>
 
 </html>

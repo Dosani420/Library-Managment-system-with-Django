@@ -47,6 +47,31 @@
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
+/* Book Cover Hover Effect */
+.book-cover-hover {
+    transition: transform 0.5s ease;
+}
+
+.book-cover-hover:hover {
+    transform: scale(1.1);
+}
+
+/* Book Overlay Effect */
+.book-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.book-overlay:hover {
+    opacity: 1;
+}
+
 /* Progress Bar */
 .progress-bar {
     width: 100%;

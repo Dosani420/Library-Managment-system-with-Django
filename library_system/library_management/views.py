@@ -361,13 +361,21 @@ def member_history(request):
         try:
             member = Member.objects.get(user=user)
             
-            all_records = BorrowRecord.objects.filter(borrower=member).order_by('borrow_date')
+            all_records = BorrowRecord.objects.filter(borrower=member).order_by('-borrow_date')
             
+            total_fines = 0
+            returned_count = 0
             for record in all_records:
                 history.append(record)
+                if record.fine > 0:
+                    total_fines += record.fine
+                if record.return_date:
+                    returned_count += 1
             
             context = {
-                'history': history
+                'history': history,
+                'total_fines': total_fines,
+                'returned_count': returned_count
             }
             
             return render(request, 'member_history.html', context)

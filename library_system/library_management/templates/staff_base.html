@@ -69,7 +69,7 @@
             <!-- Top Header with Profile -->
             <header class="dashboard-header" style="justify-content: flex-end; margin-bottom: 2rem;">
                 <div class="profile-dropdown">
-                    <div class="profile-trigger" onclick="toggleDropdown()">
+                    <div class="profile-trigger">
                         <div
                             style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; overflow: hidden;">
                             {% if user.profile_image %}
@@ -102,41 +102,6 @@
         </main>
     </div>
 
-    <script>
-        // Sidebar Toggle
-        const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.getElementById('sidebarToggle');
-        const body = document.body;
-
-        // Check local storage
-        if (localStorage.getItem('sidebar-collapsed') === 'true') {
-            body.classList.add('collapsed');
-        }
-
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('collapsed');
-            localStorage.setItem('sidebar-collapsed', body.classList.contains('collapsed'));
-        });
-
-        // Dropdown Toggle
-        function toggleDropdown() {
-            document.getElementById("myDropdown").classList.toggle("show");
-        }
-
-        // Close dropdown if clicked outside
-        window.onclick = function (event) {
-            if (!event.target.closest('.profile-trigger')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                var i;
-                for (i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-    </script>
     <script src="{% static 'library_management/enhanced_ui.js' %}"></script>
     <script>
         // Initialize Lucide icons

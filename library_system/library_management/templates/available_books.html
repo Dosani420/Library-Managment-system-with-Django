@@ -19,9 +19,7 @@
         <div class="search-wrapper" style="flex: 1; min-width: 350px; max-width: 500px; position: relative;">
             <i data-lucide="search" class="search-icon" style="width: 20px; height: 20px;"></i>
             <input type="text" id="searchInput" placeholder="Search by title, author, or genre..."
-                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s;"
-                onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 4px rgba(99, 102, 241, 0.1)'"
-                onblur="this.style.borderColor='var(--border-light)'; this.style.boxShadow='none'">
+                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s;">
         </div>
     </header>
 
@@ -68,7 +66,7 @@
                     <option value="price-high">Price (High to Low)</option>
                 </select>
 
-                <button class="btn btn-secondary" onclick="resetFilters()">
+                <button class="btn btn-secondary" data-reset-filters>
                     <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
                     Reset
                 </button>
@@ -78,10 +76,10 @@
             <div
                 style="display: flex; gap: 0.5rem; background: var(--bg-body); padding: 0.25rem; border-radius: var(--radius-md);">
                 <button id="gridViewBtn" class="btn btn-sm"
-                    style="background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onclick="switchView('grid')">
+                    style="background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     <i data-lucide="grid-3x3" style="width: 18px; height: 18px;"></i>
                 </button>
-                <button id="listViewBtn" class="btn btn-sm btn-secondary" onclick="switchView('list')">
+                <button id="listViewBtn" class="btn btn-sm btn-secondary">
                     <i data-lucide="list" style="width: 18px; height: 18px;"></i>
                 </button>
             </div>
@@ -145,7 +143,7 @@
                 {% if book.Image %}
                 <img src="{{ book.Image.url }}" alt="{{ book.Title }}"
                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s;"
-                    onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    class="book-cover-hover">
                 {% else %}
                 <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                     <i data-lucide="book" style="width: 100px; height: 100px; color: white; opacity: 0.4;"></i>
@@ -167,13 +165,12 @@
                 </div>
 
                 <!-- Quick View Overlay -->
-                <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;"
-                    onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
-                    <button onclick="window.location.href='{% url 'borrow_book' book.id %}'" class="btn btn-primary"
+                <div class="book-overlay">
+                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary"
                         style="transform: scale(1.1);">
                         <i data-lucide="book-plus" style="width: 20px; height: 20px;"></i>
                         Borrow Now
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -210,11 +207,11 @@
                         <div style="font-weight: 800; color: var(--primary); font-size: 1.25rem;">PKR {{ book.Price }}
                         </div>
                     </div>
-                    <button onclick="window.location.href='{% url 'borrow_book' book.id %}'" class="btn btn-primary"
+                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary"
                         style="padding: 0.75rem 1.25rem; font-weight: 700;">
                         <i data-lucide="book-plus" style="width: 18px; height: 18px;"></i>
                         Borrow
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -225,7 +222,7 @@
             </div>
             <h3 class="empty-state-title" style="font-size: 2rem;">No Books Found</h3>
             <p class="empty-state-description" style="font-size: 1.1rem;">Try adjusting your filters or search terms</p>
-            <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="resetFilters()">
+            <button class="btn btn-primary" style="margin-top: 1.5rem;" data-reset-filters>
                 <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
                 Reset Filters
             </button>
@@ -241,8 +238,7 @@
             <div class="book-card" data-title="{{ book.Title|lower }}" data-author="{{ book.Author|lower }}"
                 data-genre="{{ book.Genre|lower }}" data-price="{{ book.Price }}"
                 data-date="{{ book.Published_date|date:'Y-m-d' }}"
-                style="display: flex; gap: 2rem; padding: 1.5rem; border-bottom: 1px solid var(--border-light); transition: all 0.3s; cursor: pointer;"
-                onmouseover="this.style.background='var(--bg-body)'" onmouseout="this.style.background='white'">
+                style="display: flex; gap: 2rem; padding: 1.5rem; border-bottom: 1px solid var(--border-light); transition: all 0.3s; cursor: pointer;">
 
                 <!-- Book Cover Thumbnail -->
                 <div
@@ -292,118 +288,15 @@
                         <div style="font-weight: 800; color: var(--primary); font-size: 1.5rem;">PKR {{ book.Price }}
                         </div>
                     </div>
-                    <button onclick="window.location.href='{% url 'borrow_book' book.id %}'" class="btn btn-primary"
+                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary"
                         style="width: 100%;">
                         <i data-lucide="book-plus" style="width: 18px; height: 18px;"></i>
                         Borrow Now
-                    </button>
+                    </a>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
 </div>
-
-<script>
-    // Enhanced Search with Debounce
-    const searchInput = document.getElementById('searchInput');
-    const genreFilter = document.getElementById('genreFilter');
-    const sortFilter = document.getElementById('sortFilter');
-    let allBooks = Array.from(document.querySelectorAll('.book-card'));
-
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), wait);
-        };
-    }
-
-    const performSearch = debounce(() => {
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedGenre = genreFilter.value.toLowerCase();
-
-        allBooks.forEach(card => {
-            const title = card.dataset.title || '';
-            const author = card.dataset.author || '';
-            const genre = card.dataset.genre || '';
-
-            const matchesSearch = title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm);
-            const matchesGenre = !selectedGenre || genre === selectedGenre;
-
-            card.style.display = (matchesSearch && matchesGenre) ? 'block' : 'none';
-        });
-
-        performSort();
-    }, 300);
-
-    function performSort() {
-        const sortValue = sortFilter.value;
-        const container = document.getElementById('gridView').style.display !== 'none'
-            ? document.getElementById('gridView')
-            : document.getElementById('listView');
-
-        const visibleBooks = allBooks.filter(book => book.style.display !== 'none');
-
-        visibleBooks.sort((a, b) => {
-            switch (sortValue) {
-                case 'title-asc':
-                    return a.dataset.title.localeCompare(b.dataset.title);
-                case 'title-desc':
-                    return b.dataset.title.localeCompare(a.dataset.title);
-                case 'author-asc':
-                    return a.dataset.author.localeCompare(b.dataset.author);
-                case 'price-low':
-                    return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
-                case 'price-high':
-                    return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
-                case 'newest':
-                    return new Date(b.dataset.date) - new Date(a.dataset.date);
-                case 'oldest':
-                    return new Date(a.dataset.date) - new Date(b.dataset.date);
-                default:
-                    return 0;
-            }
-        });
-
-        visibleBooks.forEach(book => container.appendChild(book));
-    }
-
-    function resetFilters() {
-        searchInput.value = '';
-        genreFilter.value = '';
-        sortFilter.value = 'newest';
-        performSearch();
-    }
-
-    function switchView(view) {
-        const gridView = document.getElementById('gridView');
-        const listView = document.getElementById('listView');
-        const gridBtn = document.getElementById('gridViewBtn');
-        const listBtn = document.getElementById('listViewBtn');
-
-        if (view === 'grid') {
-            gridView.style.display = 'grid';
-            listView.style.display = 'none';
-            gridBtn.style.background = 'white';
-            gridBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-            listBtn.style.background = 'transparent';
-            listBtn.style.boxShadow = 'none';
-        } else {
-            gridView.style.display = 'none';
-            listView.style.display = 'block';
-            listBtn.style.background = 'white';
-            listBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-            gridBtn.style.background = 'transparent';
-            gridBtn.style.boxShadow = 'none';
-        }
-
-        // Update allBooks reference
-        allBooks = Array.from(document.querySelectorAll('.book-card'));
-    }
-
-    searchInput.addEventListener('input', performSearch);
-    genreFilter.addEventListener('change', performSearch);
-    sortFilter.addEventListener('change', performSort);
-</script>
 {% endblock body %}

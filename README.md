@@ -188,9 +188,6 @@ The **Library Management System** is a comprehensive web application designed to
 ## 🚀 Usage
 
 ### First-Time Setup
-
-1. **Login as Admin**
-   - Use the superuser credentials created during installation
    
 2. **Create Staff Accounts**
    - Go to the signup page
@@ -198,14 +195,15 @@ The **Library Management System** is a comprehensive web application designed to
    - Enter OTP: `1314` (for development - should be changed in production)
    - Add staff members with roles (Admin, Librarian, Assistant Librarian)
    
-3. **Add Books to Library**
+2. **Add Books to Library**
    - Go to "Manage Books"
    - Click "Add New Book"
    - Fill in book details and upload cover image
    
-4. **Register Members**
+3. **Register Members**
    - Create member accounts through the signup page
    - Members automatically get a 1-year membership
+   - Better to Use default Member (Username: jamilkalhoro, Password: 4321)
 
 ### Daily Operations
 

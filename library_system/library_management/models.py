@@ -38,7 +38,7 @@ class Staff(CommonInfo):
         ('Library Admin', 'Library Admin')
     ]
 
-    employee_id = models.CharField(max_length=50, default='STF-')
+    lib_id = models.CharField(max_length=50, default='STF-')
     hire_date = models.DateField(auto_now_add=True)
     role = models.CharField(max_length=50, choices=Role_choice, default='Librarian')
     is_blocked = models.BooleanField(default=False)
@@ -83,7 +83,7 @@ class Staff(CommonInfo):
 
 class Member(CommonInfo):
     
-    member_id = models.CharField(max_length=50, default='MBR-')
+    lib_id = models.CharField(max_length=50, default='MBR-')
     join_date = models.DateField(auto_now_add=True)
     expiry_date = models.DateField(default=get_expiry_date)
     login_time =models.TimeField(null=True,blank=True)

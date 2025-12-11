@@ -10,7 +10,7 @@ from datetime import date, datetime, timedelta
 def index(request):
     return render(request, 'index.html')
 
-def _login(request):
+def user_login(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['loginpwd']
@@ -493,5 +493,23 @@ def edit_member_data(request,member_id):
             except:
                 messages.error(request,"an unexpected Error Occured!")
                 return redirect('/manage_members/')
+    else:
+        return redirect('/login/')
+    
+def settings(request):
+    if request.session.get('is_logged_in'):
+        logged_in_user = User.objects.get(id=request.session['user_id'])
+        if not Staff.objects.filter(user=logged_in_user): 
+            logged_in  = Member.objects.get(user=logged_in_user)
+            base = 'member_base.html'
+            
+        else:
+            logged_in = Staff.objects.get(user=logged_in_user)
+            base = 'staff_base.html'
+        content = {
+            'base_template':base,
+            'logged_in':logged_in
+        }
+        return render(request,'settings.html',content)
     else:
         return redirect('/login/')

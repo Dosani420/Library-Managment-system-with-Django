@@ -22,7 +22,7 @@ urlpatterns = [
     path('', views.index, name='index' ),
     
     # Authentications URLs
-    path('login/',views._login,name='login'),
+    path('login/',views.user_login,name='login'),
     path('logout/',views.logout_user,name='logout'),
     path('signup/',views.signup,name='signup'),
     path('register/',views.add_user,name='register'),
@@ -40,6 +40,7 @@ urlpatterns = [
     path('add_book/',views.add_book,name='add_book'),
     path('manage_books/',views.manage_books,name='manage_books'),
     path('manage_members/',views.manage_members,name='manage_members'),
+    path('settings/',views.settings,name='settings'),
     
     # URLs carrying unique IDs
     path('borrow_book/<int:book_id>',views.borrow_book,name='borrow_book'),

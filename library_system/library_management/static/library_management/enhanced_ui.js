@@ -929,6 +929,201 @@ function initImageUploads() {
 }
 
 // ========================================
+// SETTINGS PAGE FUNCTIONALITY
+// ========================================
+
+function initSettingsPage() {
+    // Settings Navigation
+    const navItems = document.querySelectorAll('.settings-nav-item');
+    const sections = document.querySelectorAll('.settings-section');
+
+    // Show first section by default
+    if (sections.length > 0) {
+        sections[0].style.display = 'block';
+    }
+
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const targetSection = this.dataset.section;
+
+            // Update active nav item
+            navItems.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show/hide sections
+            sections.forEach(section => {
+                if (section.dataset.section === targetSection) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            // Initialize Lucide icons for new section
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    });
+
+    // Edit Profile Toggle
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const cancelProfileBtn = document.getElementById('cancelProfileBtn');
+    const profileForm = document.getElementById('profileForm');
+    const profileInputs = profileForm ? profileForm.querySelectorAll('input[type="text"], input[type="email"], textarea') : [];
+
+    // Store original values
+    let originalValues = {};
+    if (profileInputs.length > 0) {
+        profileInputs.forEach(input => {
+            if (input.id !== 'lib_id') {
+                originalValues[input.id] = input.value;
+            }
+        });
+    }
+
+    if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', function() {
+            profileInputs.forEach(input => {
+                if (input.id !== 'lib_id') {
+                    input.disabled = false;
+                    input.style.background = 'white';
+                    input.style.borderColor = 'var(--border-light)';
+                }
+            });
+            editProfileBtn.style.display = 'none';
+            if (saveProfileBtn) saveProfileBtn.disabled = false;
+            if (cancelProfileBtn) cancelProfileBtn.style.display = 'inline-flex';
+        });
+    }
+
+    if (cancelProfileBtn && profileForm) {
+        cancelProfileBtn.addEventListener('click', function() {
+            // Restore original values
+            profileInputs.forEach(input => {
+                if (input.id !== 'lib_id' && originalValues[input.id] !== undefined) {
+                    input.value = originalValues[input.id];
+                    input.disabled = true;
+                    input.style.background = 'var(--bg-body)';
+                    input.style.borderColor = 'var(--border-light)';
+                }
+            });
+            if (editProfileBtn) editProfileBtn.style.display = 'inline-flex';
+            if (saveProfileBtn) saveProfileBtn.disabled = true;
+            cancelProfileBtn.style.display = 'none';
+        });
+    }
+
+    // Delete Account Confirmation
+    const deleteAccountBtn = document.querySelector('[data-delete-account]');
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', function() {
+            showConfirmDialog({
+                title: 'Delete Account',
+                message: 'Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost.',
+                type: 'danger',
+                confirmText: 'Delete Account',
+                cancelText: 'Cancel',
+                onConfirm: () => {
+                    // This would trigger a form submission or API call
+                    toast.warning('Account deletion functionality needs backend implementation');
+                }
+            });
+        });
+    }
+
+    // Request Data Download
+    const requestDataBtn = document.querySelector('[data-request-data]');
+    if (requestDataBtn) {
+        requestDataBtn.addEventListener('click', function() {
+            showConfirmDialog({
+                title: 'Request Data Download',
+                message: 'Your data will be prepared and sent to your email address. This may take a few minutes.',
+                type: 'info',
+                confirmText: 'Request',
+                onConfirm: () => {
+                    toast.info('Data download request submitted. You will receive an email when ready.');
+                }
+            });
+        });
+    }
+
+    // Contact Admin/Staff
+    const contactAdminBtn = document.querySelector('[data-contact-admin]');
+    if (contactAdminBtn) {
+        contactAdminBtn.addEventListener('click', function() {
+            toast.info('Contact admin functionality needs backend implementation');
+        });
+    }
+
+    const contactStaffBtn = document.querySelector('[data-contact-staff]');
+    if (contactStaffBtn) {
+        contactStaffBtn.addEventListener('click', function() {
+            toast.info('Contact staff functionality needs backend implementation');
+        });
+    }
+
+    // Report Issue
+    const reportIssueBtn = document.querySelector('[data-report-issue]');
+    if (reportIssueBtn) {
+        reportIssueBtn.addEventListener('click', function() {
+            const section = document.getElementById('support-section');
+            if (section) {
+                section.style.display = 'block';
+                navItems.forEach(nav => nav.classList.remove('active'));
+                document.querySelector('[data-section="support"]').classList.add('active');
+            }
+        });
+    }
+
+    // Help & FAQ
+    const helpFaqBtn = document.querySelector('[data-help-faq]');
+    if (helpFaqBtn) {
+        helpFaqBtn.addEventListener('click', function() {
+            toast.info('FAQ page needs to be created');
+        });
+    }
+
+    // View Activity
+    const viewActivityBtn = document.querySelector('[data-view-activity]');
+    if (viewActivityBtn) {
+        viewActivityBtn.addEventListener('click', function() {
+            toast.info('Login activity view needs backend implementation');
+        });
+    }
+
+    // Manage Devices
+    const manageDevicesBtn = document.querySelector('[data-manage-devices]');
+    if (manageDevicesBtn) {
+        manageDevicesBtn.addEventListener('click', function() {
+            toast.info('Device management needs backend implementation');
+        });
+    }
+
+    // Theme Selection
+    const themeOptions = document.querySelectorAll('.theme-option');
+    themeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                // Update all theme options styling
+                themeOptions.forEach(opt => {
+                    if (opt === this) {
+                        opt.style.borderColor = 'var(--primary)';
+                        opt.style.background = 'rgba(99, 102, 241, 0.1)';
+                    } else {
+                        opt.style.borderColor = 'var(--border-light)';
+                        opt.style.background = '';
+                    }
+                });
+            }
+        });
+    });
+}
+
+// ========================================
 // ENHANCED INITIALIZATION
 // ========================================
 
@@ -1043,6 +1238,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     initImageUploads();
+
+    // Initialize settings page
+    if (document.querySelector('.settings-nav-item')) {
+        initSettingsPage();
+    }
 
     // Initialize Lucide icons
     if (typeof lucide !== 'undefined') {

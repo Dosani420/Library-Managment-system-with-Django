@@ -933,38 +933,73 @@ function initImageUploads() {
 // ========================================
 
 function initSettingsPage() {
-    // Settings Navigation
+    // Check if using tab-based navigation (staff) or sidebar navigation (member)
+    const tabButtons = document.querySelectorAll('.staff-tab-btn');
     const navItems = document.querySelectorAll('.settings-nav-item');
+    const tabContents = document.querySelectorAll('.staff-tab-content');
     const sections = document.querySelectorAll('.settings-section');
 
-    // Show first section by default
-    if (sections.length > 0) {
-        sections[0].style.display = 'block';
-    }
+    // Tab-based navigation (Staff Settings)
+    if (tabButtons.length > 0) {
+        // Show first tab by default
+        if (tabContents.length > 0) {
+            tabContents[0].style.display = 'block';
+        }
 
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const targetSection = this.dataset.section;
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetTab = this.dataset.tab;
 
-            // Update active nav item
-            navItems.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
+                // Update active tab button
+                tabButtons.forEach(tab => tab.classList.remove('active'));
+                this.classList.add('active');
 
-            // Show/hide sections
-            sections.forEach(section => {
-                if (section.dataset.section === targetSection) {
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = 'none';
+                // Show/hide tab contents
+                tabContents.forEach(content => {
+                    if (content.id === `${targetTab}-tab`) {
+                        content.style.display = 'block';
+                    } else {
+                        content.style.display = 'none';
+                    }
+                });
+
+                // Initialize Lucide icons for new tab
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
                 }
             });
-
-            // Initialize Lucide icons for new section
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
         });
-    });
+    }
+
+    // Sidebar-based navigation (Member Settings)
+    if (navItems.length > 0 && sections.length > 0) {
+        // Show first section by default
+        sections[0].style.display = 'block';
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const targetSection = this.dataset.section;
+
+                // Update active nav item
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+
+                // Show/hide sections
+                sections.forEach(section => {
+                    if (section.dataset.section === targetSection) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+
+                // Initialize Lucide icons for new section
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            });
+        });
+    }
 
     // Edit Profile Toggle
     const editProfileBtn = document.getElementById('editProfileBtn');
@@ -1068,11 +1103,24 @@ function initSettingsPage() {
     const reportIssueBtn = document.querySelector('[data-report-issue]');
     if (reportIssueBtn) {
         reportIssueBtn.addEventListener('click', function() {
+            // For sidebar navigation (member)
             const section = document.getElementById('support-section');
             if (section) {
                 section.style.display = 'block';
                 navItems.forEach(nav => nav.classList.remove('active'));
-                document.querySelector('[data-section="support"]').classList.add('active');
+                const supportNav = document.querySelector('[data-section="support"]');
+                if (supportNav) supportNav.classList.add('active');
+            }
+            // For tab navigation (staff)
+            const supportTab = document.getElementById('support-tab');
+            if (supportTab) {
+                document.querySelectorAll('.staff-tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                supportTab.style.display = 'block';
+                tabButtons.forEach(tab => tab.classList.remove('active'));
+                const supportTabBtn = document.querySelector('[data-tab="support"]');
+                if (supportTabBtn) supportTabBtn.classList.add('active');
             }
         });
     }

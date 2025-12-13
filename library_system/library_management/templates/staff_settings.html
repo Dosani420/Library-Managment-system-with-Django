@@ -1,0 +1,601 @@
+{% extends "staff_base.html" %}
+{% load static %}
+
+{% block title %}Settings - Staff Dashboard{% endblock title %}
+
+{% block body %}
+<div class="main-content">
+    <!-- Enhanced Header -->
+    <header class="dashboard-header" style="margin-bottom: 2.5rem;">
+        <div>
+            <h1
+                style="font-size: 2.25rem; margin-bottom: 0.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.75rem;">
+                <i data-lucide="settings" style="width: 36px; height: 36px; color: var(--primary);"></i>
+                Settings
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Manage your account settings and preferences</p>
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div style="margin-bottom: 2rem;">
+        {% for message in messages %}
+        <div data-django-message
+            data-message-type="{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}"
+            style="display: none;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem;">
+        <!-- Settings Sidebar Navigation -->
+        <aside style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 1.5rem; height: fit-content; position: sticky; top: 2rem;">
+            <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="settings-nav-item active" data-section="profile">
+                    <i data-lucide="user" style="width: 20px; height: 20px;"></i>
+                    <span>Profile</span>
+                </button>
+                <button class="settings-nav-item" data-section="security">
+                    <i data-lucide="shield" style="width: 20px; height: 20px;"></i>
+                    <span>Security</span>
+                </button>
+                <button class="settings-nav-item" data-section="library">
+                    <i data-lucide="library" style="width: 20px; height: 20px;"></i>
+                    <span>Library</span>
+                </button>
+                <button class="settings-nav-item" data-section="notifications">
+                    <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                    <span>Notifications</span>
+                </button>
+                <button class="settings-nav-item" data-section="privacy">
+                    <i data-lucide="lock" style="width: 20px; height: 20px;"></i>
+                    <span>Privacy</span>
+                </button>
+                <button class="settings-nav-item" data-section="preferences">
+                    <i data-lucide="palette" style="width: 20px; height: 20px;"></i>
+                    <span>Preferences</span>
+                </button>
+                <button class="settings-nav-item" data-section="support">
+                    <i data-lucide="help-circle" style="width: 20px; height: 20px;"></i>
+                    <span>Support</span>
+                </button>
+                <div style="border-top: 1px solid var(--border-light); margin: 0.5rem 0;"></div>
+                <button class="settings-nav-item danger" data-section="danger">
+                    <i data-lucide="alert-triangle" style="width: 20px; height: 20px;"></i>
+                    <span>Danger Zone</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Settings Content -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Profile Settings Section -->
+            <section class="settings-section" id="profile-section" data-section="profile">
+                <div
+                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="width: 64px; height: 64px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;">
+                            {{ logged_in.user.first_name|slice:":1"|default:"S" }}{{ logged_in.user.last_name|slice:":1"|default:"" }}
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Profile Settings</h2>
+                            <p style="color: var(--text-secondary);">Manage your personal information</p>
+                        </div>
+                    </div>
+
+                    <form method="post" id="profileForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="profile">
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label" for="first_name">
+                                    <i data-lucide="user" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
+                                    First Name
+                                </label>
+                                <input type="text" name="first_name" id="first_name" class="form-control"
+                                    value="{{ logged_in.user.first_name }}" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="last_name">
+                                    <i data-lucide="user" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
+                                    Last Name
+                                </label>
+                                <input type="text" name="last_name" id="last_name" class="form-control"
+                                    value="{{ logged_in.user.last_name }}" disabled>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label" for="email">
+                                    <i data-lucide="mail" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
+                                    Email
+                                </label>
+                                <input type="email" name="email" id="email" class="form-control"
+                                    value="{{ logged_in.user.email }}" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="username">
+                                    <i data-lucide="at-sign" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
+                                    Username
+                                </label>
+                                <input type="text" name="username" id="username" class="form-control"
+                                    value="{{ logged_in.user.username }}" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="lib_id">
+                                <i data-lucide="id-card" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
+                                Staff ID
+                            </label>
+                            <input type="text" id="lib_id" class="form-control" value="{{ logged_in.lib_id }}" disabled
+                                style="background: var(--bg-body);">
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button type="button" class="btn btn-secondary" id="editProfileBtn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="edit" style="width: 18px; height: 18px;"></i>
+                                Edit Profile
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="saveProfileBtn" disabled style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="save" style="width: 18px; height: 18px;"></i>
+                                Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelProfileBtn" style="display: none; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Account & Security Section -->
+            <section class="settings-section" id="security-section" data-section="security" style="display: none;">
+                <div
+                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="shield" style="width: 24px; height: 24px; color: var(--danger);"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Account & Security</h2>
+                            <p style="color: var(--text-secondary);">Manage your account security settings</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Change Password Card -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <div>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Change Password</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Update your password to keep your account secure</p>
+                                </div>
+                                <a href="{% url 'forget_password' %}" class="btn btn-primary">
+                                    <i data-lucide="key" style="width: 18px; height: 18px;"></i>
+                                    Change Password
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Login Activity Card -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Login Activity</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                        Last login: {% if logged_in.login_time %}{{ logged_in.login_time|date:"M d, Y H:i" }}{% else %}Never{% endif %}
+                                    </p>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                        Status: <span style="color: var(--success); font-weight: 600;">{{ logged_in.status }}</span>
+                                    </p>
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-view-activity>
+                                    <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
+                                    View Activity
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Two-Factor Authentication Card -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Two-Factor Authentication</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Add an extra layer of security to your account</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="two_factor" data-toggle="two-factor">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Connected Devices Card -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Manage Connected Devices</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">View and manage devices that have access to your account</p>
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-manage-devices>
+                                    <i data-lucide="smartphone" style="width: 18px; height: 18px;"></i>
+                                    Manage Devices
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Library Management Settings -->
+            <section class="settings-section" id="library-section" data-section="library" style="display: none;">
+                <div
+                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="library" style="width: 24px; height: 24px; color: var(--primary);"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Library Management Settings</h2>
+                            <p style="color: var(--text-secondary);">Configure library rules and notifications</p>
+                        </div>
+                    </div>
+
+                    <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="library_settings">
+
+                        <!-- Fine Rules Configuration -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Fine Rules Configuration</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label" for="fine_amount">Fine Amount (PKR per day)</label>
+                                    <input type="number" name="fine_amount" id="fine_amount" class="form-control" value="10"
+                                        min="0" step="1">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="grace_period">Grace Period (days)</label>
+                                    <input type="number" name="grace_period" id="grace_period" class="form-control" value="0"
+                                        min="0" step="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notification Templates -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Notification Templates</h3>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label" for="due_date_template">Due Date Reminder Template</label>
+                                    <textarea name="due_date_template" id="due_date_template" class="form-control" rows="3"
+                                        placeholder="Enter notification template for due date reminders...">Your book "{{book_title}}" is due on {{due_date}}. Please return it on time.</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="overdue_template">Overdue Notification Template</label>
+                                    <textarea name="overdue_template" id="overdue_template" class="form-control" rows="3"
+                                        placeholder="Enter notification template for overdue books...">Your book "{{book_title}}" is overdue. Please return it immediately to avoid additional fines.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: fit-content;">
+                            <i data-lucide="save" style="width: 18px; height: 18px;"></i>
+                            Save Library Settings
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Notifications Section -->
+            <section class="settings-section" id="notifications-section" data-section="notifications" style="display: none;">
+                <div
+                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="width: 48px; height: 48px; background: rgba(245, 158, 11, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="bell" style="width: 24px; height: 24px; color: var(--warning);"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Notifications</h2>
+                            <p style="color: var(--text-secondary);">Manage your notification preferences</p>
+                        </div>
+                    </div>
+
+                    <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="notifications">
+
+                        <!-- Staff Notifications -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Overdue Alerts</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable Overdue Alerts</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive alerts when books become overdue</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="overdue_alerts" checked data-toggle="overdue-alerts">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">New Book Alerts</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable New Book Alerts</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Get notified when new books are added</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="new_book_alerts" checked data-toggle="new-book-alerts">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Email/SMS Settings -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Notification Channels</h3>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Email Notifications</div>
+                                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive notifications via email</div>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" name="email_notifications" checked data-toggle="email-notifications">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 0.25rem;">SMS Notifications</div>
+                                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive notifications via SMS</div>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" name="sms_notifications" data-toggle="sms-notifications">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: fit-content;">
+                            <i data-lucide="save" style="width: 18px; height: 18px;"></i>
+                            Save Notification Settings
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Privacy Section -->
+            <section class="settings-section" id="privacy-section" data-section="privacy" style="display: none;">
+                <div
+                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="lock" style="width: 24px; height: 24px; color: var(--primary);"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Privacy</h2>
+                            <p style="color: var(--text-secondary);">Manage data access permissions</p>
+                        </div>
+                    </div>
+
+                    <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="privacy">
+
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Data Access Permissions</h3>
+                            <div class="form-group">
+                                <label class="form-label" for="data_access_level">Access Level</label>
+                                <select name="data_access_level" id="data_access_level" class="form-control">
+                                    <option value="admin" {% if logged_in.role == 'Library Admin' %}selected{% endif %}>Admin - Full Access</option>
+                                    <option value="normal" {% if logged_in.role != 'Library Admin' %}selected{% endif %}>Normal Staff - Limited Access</option>
+                                </select>
+                                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+                                    Current Role: <strong>{{ logged_in.role }}</strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: fit-content;">
+                            <i data-lucide="save" style="width: 18px; height: 18px;"></i>
+                            Save Privacy Settings
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Preferences Section -->
+            <section class="settings-section" id="preferences-section" data-section="preferences" style="display: none;">
+                <div
+                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="palette" style="width: 24px; height: 24px; color: var(--success);"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">App Preferences</h2>
+                            <p style="color: var(--text-secondary);">Customize your experience</p>
+                        </div>
+                    </div>
+
+                    <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="preferences">
+
+                        <!-- Theme Selection -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Theme</h3>
+                            <div style="display: flex; gap: 1rem;">
+                                <label style="flex: 1; border: 2px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; transition: all 0.2s;" class="theme-option" data-theme="light">
+                                    <input type="radio" name="theme" value="light" checked style="margin-right: 0.5rem;">
+                                    <i data-lucide="sun" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
+                                    <span style="font-weight: 600;">Light</span>
+                                </label>
+                                <label style="flex: 1; border: 2px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; transition: all 0.2s;" class="theme-option" data-theme="dark">
+                                    <input type="radio" name="theme" value="dark" style="margin-right: 0.5rem;">
+                                    <i data-lucide="moon" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
+                                    <span style="font-weight: 600;">Dark</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Language Selection -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Language</h3>
+                            <div class="form-group">
+                                <select name="language" id="language" class="form-control">
+                                    <option value="en">English</option>
+                                    <option value="ur">Urdu</option>
+                                    <option value="ar">Arabic</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard Layout (Staff Only) -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Dashboard Layout</h3>
+                            <div class="form-group">
+                                <select name="dashboard_layout" id="dashboard_layout" class="form-control">
+                                    <option value="default">Default</option>
+                                    <option value="compact">Compact</option>
+                                    <option value="detailed">Detailed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: fit-content;">
+                            <i data-lucide="save" style="width: 18px; height: 18px;"></i>
+                            Save Preferences
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Support Section -->
+            <section class="settings-section" id="support-section" data-section="support" style="display: none;">
+                <div
+                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="width: 48px; height: 48px; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="help-circle" style="width: 24px; height: 24px; color: #3b82f6;"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Support</h2>
+                            <p style="color: var(--text-secondary);">Get help and report issues</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Staff Support Options -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Report Technical Issues</h3>
+                            <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+                                {% csrf_token %}
+                                <input type="hidden" name="form_type" value="report_issue">
+                                <div class="form-group">
+                                    <label class="form-label" for="issue_subject">Subject</label>
+                                    <input type="text" name="issue_subject" id="issue_subject" class="form-control"
+                                        placeholder="Brief description of the issue">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="issue_description">Description</label>
+                                    <textarea name="issue_description" id="issue_description" class="form-control" rows="4"
+                                        placeholder="Describe the issue in detail..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: fit-content;">
+                                    <i data-lucide="send" style="width: 18px; height: 18px;"></i>
+                                    Submit Report
+                                </button>
+                            </form>
+                        </div>
+
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Contact Admin</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Get in touch with the system administrator</p>
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-contact-admin>
+                                    <i data-lucide="mail" style="width: 18px; height: 18px;"></i>
+                                    Contact Admin
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Danger Zone Section -->
+            <section class="settings-section" id="danger-section" data-section="danger" style="display: none;">
+                <div
+                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem; border: 2px solid var(--danger);">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="alert-triangle" style="width: 24px; height: 24px; color: var(--danger);"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; color: var(--danger);">Danger Zone</h2>
+                            <p style="color: var(--text-secondary);">Irreversible and destructive actions</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Logout -->
+                        <div
+                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem; background: var(--bg-body);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Log Out</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Sign out of your account</p>
+                                </div>
+                                <a href="{% url 'logout' %}" class="btn btn-secondary">
+                                    <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+                                    Log Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

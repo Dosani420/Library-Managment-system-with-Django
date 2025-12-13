@@ -501,15 +501,13 @@ def settings(request):
         logged_in_user = User.objects.get(id=request.session['user_id'])
         if not Staff.objects.filter(user=logged_in_user): 
             logged_in  = Member.objects.get(user=logged_in_user)
-            base = 'member_base.html'
-            
+            template = 'member_settings.html'
         else:
             logged_in = Staff.objects.get(user=logged_in_user)
-            base = 'staff_base.html'
+            template = 'staff_settings.html'
         content = {
-            'base_template':base,
             'logged_in':logged_in
         }
-        return render(request,'settings.html',content)
+        return render(request, template, content)
     else:
         return redirect('/login/')

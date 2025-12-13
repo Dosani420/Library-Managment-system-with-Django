@@ -108,8 +108,8 @@ function showConfirmDialog(options) {
         message = 'Are you sure you want to proceed?',
         confirmText = 'Confirm',
         cancelText = 'Cancel',
-        onConfirm = () => {},
-        onCancel = () => {},
+        onConfirm = () => { },
+        onCancel = () => { },
         type = 'warning'
     } = options;
 
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Enhanced form submission
     document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn && !submitBtn.disabled) {
                 showLoading(submitBtn);
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add ripple effect to buttons
     document.querySelectorAll('.btn').forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             const ripple = document.createElement('span');
             const rect = this.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
@@ -437,7 +437,7 @@ class DashboardBase {
         const profileTrigger = document.querySelector('.profile-trigger');
         if (!profileTrigger) return;
 
-        profileTrigger.addEventListener('click', function(e) {
+        profileTrigger.addEventListener('click', function (e) {
             e.stopPropagation();
             const dropdown = document.getElementById('myDropdown');
             if (dropdown) {
@@ -446,7 +446,7 @@ class DashboardBase {
         });
 
         // Close dropdown if clicked outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (!event.target.closest('.profile-trigger') && !event.target.closest('.dropdown-content')) {
                 const dropdowns = document.getElementsByClassName('dropdown-content');
                 for (let i = 0; i < dropdowns.length; i++) {
@@ -463,13 +463,112 @@ class DashboardBase {
 }
 
 // ========================================
+// THEME MANAGER
+// ========================================
+
+class ThemeManager {
+    constructor() {
+        this.theme = localStorage.getItem('theme') || 'light';
+        this.init();
+    }
+
+    init() {
+        console.log('ThemeManager initializing...');
+        // Apply saved theme
+        this.applyTheme(this.theme);
+
+        // Listen for theme toggle clicks (header button)
+        document.addEventListener('click', (e) => {
+            const toggle = e.target.closest('#themeToggle');
+            if (toggle) {
+                console.log('Theme toggle clicked');
+                e.preventDefault(); // Prevent any default behavior
+                this.toggleTheme();
+            }
+        });
+
+        // Listen for radio button changes (settings page)
+        const themeRadios = document.querySelectorAll('input[name="theme"]');
+        themeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                console.log('Theme radio changed', e.target.value);
+                this.setTheme(e.target.value);
+            });
+        });
+
+        // Initialize radio buttons if they exist
+        this.updateRadios();
+    }
+
+    setTheme(newTheme) {
+        console.log('Setting theme to:', newTheme);
+        this.theme = newTheme;
+        localStorage.setItem('theme', newTheme);
+        this.applyTheme(newTheme);
+        this.updateRadios();
+        this.updateToggleButton();
+    }
+
+    toggleTheme() {
+        const newTheme = this.theme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme);
+    }
+
+    applyTheme(theme) {
+        const root = document.documentElement;
+        if (theme === 'dark') {
+            root.setAttribute('data-theme', 'dark');
+            document.body.setAttribute('data-theme', 'dark');
+        } else {
+            root.removeAttribute('data-theme');
+            document.body.removeAttribute('data-theme');
+        }
+    }
+
+    updateRadios() {
+        const radio = document.querySelector(`input[name="theme"][value="${this.theme}"]`);
+        if (radio) {
+            radio.checked = true;
+            // Also update parent visual state if needed
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                if (opt.querySelector(`input[value="${this.theme}"]`)) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+    }
+
+    updateToggleButton() {
+        const btn = document.querySelector('#themeToggle');
+        if (btn) {
+            // Lucide replaces the <i> tag with an <svg>, so we can't just find 'i'.
+            // Instead, we should clear the button content and re-add the icon with the correct attribute.
+            const iconName = this.theme === 'dark' ? 'moon' : 'sun';
+
+            // Re-create the inner HTML
+            btn.innerHTML = `<i data-lucide="${iconName}" style="width: 20px; height: 20px;"></i>`;
+
+            // Re-initialize icons just for this element if possible, or globally
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+    }
+}
+
+// Initialize Theme Manager
+const themeManager = new ThemeManager();
+
+// ========================================
 // REUSABLE SEARCH & FILTER COMPONENT
 // ========================================
 
 class SearchableList {
     constructor(options) {
-        this.container = typeof options.container === 'string' 
-            ? document.querySelector(options.container) 
+        this.container = typeof options.container === 'string'
+            ? document.querySelector(options.container)
             : options.container;
         this.itemsSelector = options.itemsSelector;
         this.searchInput = typeof options.searchInput === 'string'
@@ -479,7 +578,7 @@ class SearchableList {
         this.sortSelect = typeof options.sortSelect === 'string'
             ? document.querySelector(options.sortSelect)
             : options.sortSelect;
-        this.emptyStateElement = options.emptyStateElement 
+        this.emptyStateElement = options.emptyStateElement
             ? (typeof options.emptyStateElement === 'string'
                 ? document.querySelector(options.emptyStateElement)
                 : options.emptyStateElement)
@@ -546,7 +645,7 @@ class SearchableList {
                 if (filterElement && filterElement.value) {
                     const filterValue = filterElement.value.toLowerCase();
                     const itemValue = (item.dataset[key] || '').toLowerCase();
-                    
+
                     if (key === 'fine') {
                         // Special handling for fine filter
                         const fine = parseFloat(item.dataset.fine) || 0;
@@ -702,8 +801,8 @@ class ViewToggle {
             if (this.gridView) this.gridView.style.display = 'grid';
             if (this.listView) this.listView.style.display = 'none';
             if (this.gridBtn) {
-                this.gridBtn.style.background = 'white';
-                this.gridBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                this.gridBtn.style.background = 'var(--bg-surface)';
+                this.gridBtn.style.boxShadow = '0 2px 4px var(--shadow-sm)';
             }
             if (this.listBtn) {
                 this.listBtn.style.background = 'transparent';
@@ -713,8 +812,8 @@ class ViewToggle {
             if (this.gridView) this.gridView.style.display = 'none';
             if (this.listView) this.listView.style.display = 'block';
             if (this.listBtn) {
-                this.listBtn.style.background = 'white';
-                this.listBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                this.listBtn.style.background = 'var(--bg-surface)';
+                this.listBtn.style.boxShadow = '0 2px 4px var(--shadow-sm)';
             }
             if (this.gridBtn) {
                 this.gridBtn.style.background = 'transparent';
@@ -890,7 +989,7 @@ function initMembersPage() {
 function initManageBooksPage() {
     // Initialize delete book buttons
     document.querySelectorAll('[data-delete-book]').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const bookId = this.dataset.deleteBook;
             const bookTitle = this.dataset.bookTitle || 'this book';
             deleteBook(bookId, bookTitle);
@@ -901,7 +1000,7 @@ function initManageBooksPage() {
 function initBorrowedBooksPage() {
     // Initialize return book buttons
     document.querySelectorAll('[data-return-book]').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const bookId = this.dataset.returnBook;
             const bookTitle = this.dataset.bookTitle || 'this book';
             returnBook(bookId, bookTitle);
@@ -921,7 +1020,7 @@ function initSignupPage() {
 function initImageUploads() {
     // Image upload triggers
     document.querySelectorAll('[data-trigger-upload]').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const inputId = this.dataset.triggerUpload;
             triggerImageUpload(inputId);
         });
@@ -947,7 +1046,7 @@ function initSettingsPage() {
         }
 
         tabButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const targetTab = this.dataset.tab;
 
                 // Update active tab button
@@ -977,7 +1076,7 @@ function initSettingsPage() {
         sections[0].style.display = 'block';
 
         navItems.forEach(item => {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function () {
                 const targetSection = this.dataset.section;
 
                 // Update active nav item
@@ -1019,7 +1118,7 @@ function initSettingsPage() {
     }
 
     if (editProfileBtn) {
-        editProfileBtn.addEventListener('click', function() {
+        editProfileBtn.addEventListener('click', function () {
             profileInputs.forEach(input => {
                 if (input.id !== 'lib_id') {
                     input.disabled = false;
@@ -1034,7 +1133,7 @@ function initSettingsPage() {
     }
 
     if (cancelProfileBtn && profileForm) {
-        cancelProfileBtn.addEventListener('click', function() {
+        cancelProfileBtn.addEventListener('click', function () {
             // Restore original values
             profileInputs.forEach(input => {
                 if (input.id !== 'lib_id' && originalValues[input.id] !== undefined) {
@@ -1047,13 +1146,47 @@ function initSettingsPage() {
             if (editProfileBtn) editProfileBtn.style.display = 'inline-flex';
             if (saveProfileBtn) saveProfileBtn.disabled = true;
             cancelProfileBtn.style.display = 'none';
+
+            // Restore theme if preferences were changed but not saved
+            const savedTheme = storage.get('saved-theme', 'light');
+            const tempTheme = storage.get('temp-theme', null);
+            if (tempTheme && tempTheme !== savedTheme) {
+                // User changed theme but cancelled, restore to saved theme
+                storage.remove('temp-theme');
+                const themeToApply = savedTheme || 'light';
+                if (themeToApply === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+                // Update radio buttons
+                const themeRadios = document.querySelectorAll('input[name="theme"]');
+                const themeOptions = document.querySelectorAll('.theme-option');
+                themeRadios.forEach(radio => {
+                    if (radio.value === themeToApply) {
+                        radio.checked = true;
+                        const parentOption = radio.closest('.theme-option');
+                        if (parentOption) {
+                            themeOptions.forEach(opt => {
+                                if (opt === parentOption) {
+                                    opt.style.borderColor = 'var(--primary)';
+                                    opt.style.background = 'rgba(99, 102, 241, 0.1)';
+                                } else {
+                                    opt.style.borderColor = 'var(--border-light)';
+                                    opt.style.background = '';
+                                }
+                            });
+                        }
+                    }
+                });
+            }
         });
     }
 
     // Delete Account Confirmation
     const deleteAccountBtn = document.querySelector('[data-delete-account]');
     if (deleteAccountBtn) {
-        deleteAccountBtn.addEventListener('click', function() {
+        deleteAccountBtn.addEventListener('click', function () {
             showConfirmDialog({
                 title: 'Delete Account',
                 message: 'Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost.',
@@ -1071,7 +1204,7 @@ function initSettingsPage() {
     // Request Data Download
     const requestDataBtn = document.querySelector('[data-request-data]');
     if (requestDataBtn) {
-        requestDataBtn.addEventListener('click', function() {
+        requestDataBtn.addEventListener('click', function () {
             showConfirmDialog({
                 title: 'Request Data Download',
                 message: 'Your data will be prepared and sent to your email address. This may take a few minutes.',
@@ -1087,14 +1220,14 @@ function initSettingsPage() {
     // Contact Admin/Staff
     const contactAdminBtn = document.querySelector('[data-contact-admin]');
     if (contactAdminBtn) {
-        contactAdminBtn.addEventListener('click', function() {
+        contactAdminBtn.addEventListener('click', function () {
             toast.info('Contact admin functionality needs backend implementation');
         });
     }
 
     const contactStaffBtn = document.querySelector('[data-contact-staff]');
     if (contactStaffBtn) {
-        contactStaffBtn.addEventListener('click', function() {
+        contactStaffBtn.addEventListener('click', function () {
             toast.info('Contact staff functionality needs backend implementation');
         });
     }
@@ -1102,7 +1235,7 @@ function initSettingsPage() {
     // Report Issue
     const reportIssueBtn = document.querySelector('[data-report-issue]');
     if (reportIssueBtn) {
-        reportIssueBtn.addEventListener('click', function() {
+        reportIssueBtn.addEventListener('click', function () {
             // For sidebar navigation (member)
             const section = document.getElementById('support-section');
             if (section) {
@@ -1128,7 +1261,7 @@ function initSettingsPage() {
     // Help & FAQ
     const helpFaqBtn = document.querySelector('[data-help-faq]');
     if (helpFaqBtn) {
-        helpFaqBtn.addEventListener('click', function() {
+        helpFaqBtn.addEventListener('click', function () {
             toast.info('FAQ page needs to be created');
         });
     }
@@ -1136,7 +1269,7 @@ function initSettingsPage() {
     // View Activity
     const viewActivityBtn = document.querySelector('[data-view-activity]');
     if (viewActivityBtn) {
-        viewActivityBtn.addEventListener('click', function() {
+        viewActivityBtn.addEventListener('click', function () {
             toast.info('Login activity view needs backend implementation');
         });
     }
@@ -1144,30 +1277,86 @@ function initSettingsPage() {
     // Manage Devices
     const manageDevicesBtn = document.querySelector('[data-manage-devices]');
     if (manageDevicesBtn) {
-        manageDevicesBtn.addEventListener('click', function() {
+        manageDevicesBtn.addEventListener('click', function () {
             toast.info('Device management needs backend implementation');
         });
     }
 
-    // Theme Selection
+    // Theme Selection with Immediate Application
     const themeOptions = document.querySelectorAll('.theme-option');
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+
+    // Function to apply theme
+    const applyTheme = (theme) => {
+        const html = document.documentElement;
+        if (theme === 'dark') {
+            html.setAttribute('data-theme', 'dark');
+        } else {
+            html.removeAttribute('data-theme');
+        }
+        // Store temporary theme in localStorage (will be cleared if not saved)
+        storage.set('temp-theme', theme);
+    };
+
+    // Function to update theme option styling
+    const updateThemeOptionStyling = (selectedOption) => {
+        themeOptions.forEach(opt => {
+            if (opt === selectedOption) {
+                opt.style.borderColor = 'var(--primary)';
+                opt.style.background = 'rgba(99, 102, 241, 0.1)';
+            } else {
+                opt.style.borderColor = 'var(--border-light)';
+                opt.style.background = '';
+            }
+        });
+    };
+
+    // Handle theme option clicks
     themeOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             const radio = this.querySelector('input[type="radio"]');
             if (radio) {
                 radio.checked = true;
-                // Update all theme options styling
-                themeOptions.forEach(opt => {
-                    if (opt === this) {
-                        opt.style.borderColor = 'var(--primary)';
-                        opt.style.background = 'rgba(99, 102, 241, 0.1)';
-                    } else {
-                        opt.style.borderColor = 'var(--border-light)';
-                        opt.style.background = '';
-                    }
-                });
+                const theme = radio.value;
+                applyTheme(theme);
+                updateThemeOptionStyling(this);
             }
         });
+    });
+
+    // Handle direct radio button changes
+    themeRadios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (this.checked) {
+                const theme = this.value;
+                applyTheme(theme);
+                // Update styling for the parent option
+                const parentOption = this.closest('.theme-option');
+                if (parentOption) {
+                    updateThemeOptionStyling(parentOption);
+                }
+            }
+        });
+    });
+
+    // Handle form submission - save theme preference
+    const preferencesForms = document.querySelectorAll('form[method="post"]');
+    preferencesForms.forEach(form => {
+        const formType = form.querySelector('input[name="form_type"]');
+        if (formType && formType.value === 'preferences') {
+            form.addEventListener('submit', function (e) {
+                // Get selected theme
+                const selectedTheme = form.querySelector('input[name="theme"]:checked');
+                if (selectedTheme) {
+                    const theme = selectedTheme.value;
+                    // Save to localStorage as saved theme (backend will persist it)
+                    storage.set('saved-theme', theme);
+                    // Clear temporary theme since it's being saved
+                    storage.remove('temp-theme');
+                }
+                // The backend will handle saving the theme preference to database
+            });
+        }
     });
 }
 
@@ -1176,6 +1365,46 @@ function initSettingsPage() {
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize theme on page load
+    // Check for saved theme from backend (via data attribute) or localStorage
+    const mainContent = document.querySelector('.main-content[data-saved-theme]');
+    const body = document.body;
+    const savedThemeFromBackend = (mainContent ? mainContent.dataset.savedTheme : null) ||
+        (body.dataset.savedTheme || null);
+    const savedTheme = storage.get('saved-theme', null);
+
+    // Clear temp theme on page load (it's only for current session)
+    // If user didn't save, temp theme is lost on reload
+    storage.remove('temp-theme');
+
+    // Priority: saved theme from backend > saved theme from localStorage > default (light)
+    const initialTheme = savedThemeFromBackend || savedTheme || 'light';
+
+    // Update localStorage saved theme if backend provided one
+    if (savedThemeFromBackend) {
+        storage.set('saved-theme', savedThemeFromBackend);
+    }
+
+    if (initialTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+
+    // Set radio button state if theme options exist
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+    themeRadios.forEach(radio => {
+        if (radio.value === initialTheme) {
+            radio.checked = true;
+            // Update styling
+            const parentOption = radio.closest('.theme-option');
+            if (parentOption) {
+                parentOption.style.borderColor = 'var(--primary)';
+                parentOption.style.background = 'rgba(99, 102, 241, 0.1)';
+            }
+        }
+    });
+
     // Initialize base functionality
     DashboardBase.init();
 
@@ -1205,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Enhanced form submission
     document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn && !submitBtn.disabled) {
                 showLoading(submitBtn);
@@ -1215,7 +1444,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add ripple effect to buttons
     document.querySelectorAll('.btn').forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             const ripple = document.createElement('span');
             const rect = this.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
@@ -1245,21 +1474,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add hover effects for table rows
     document.querySelectorAll('tbody tr').forEach(row => {
-        row.addEventListener('mouseenter', function() {
+        row.addEventListener('mouseenter', function () {
             this.style.background = 'var(--bg-body)';
         });
-        row.addEventListener('mouseleave', function() {
+        row.addEventListener('mouseleave', function () {
             this.style.background = '';
         });
     });
 
     // Add focus effects for search inputs
     document.querySelectorAll('.search-wrapper input').forEach(input => {
-        input.addEventListener('focus', function() {
+        input.addEventListener('focus', function () {
             this.style.borderColor = 'var(--primary)';
             this.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
         });
-        input.addEventListener('blur', function() {
+        input.addEventListener('blur', function () {
             this.style.borderColor = 'var(--border-light)';
             this.style.boxShadow = 'none';
         });
@@ -1284,7 +1513,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('role')) {
         initSignupPage();
     }
-    
+
     initImageUploads();
 
     // Initialize settings page

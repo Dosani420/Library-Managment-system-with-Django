@@ -6,11 +6,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Staff Dashboard - Library{% endblock title %}</title>
-    <link rel="stylesheet" href="{% static 'library_management/premium_style.css' %}">
-    <link rel="stylesheet" href="{% static 'library_management/enhanced_ui.css' %}">
+    <link rel="stylesheet" href="{% static 'library_management/styles.css' %}">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
+    <script>
+        // Apply theme immediately to prevent flash
+        (function () {
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
 
 <body>
@@ -68,6 +75,10 @@
         <main class="main-content">
             <!-- Top Header with Profile -->
             <header class="dashboard-header" style="justify-content: flex-end; margin-bottom: 2rem;">
+                <button id="themeToggle" class="btn btn-secondary"
+                    style="margin-right: 1rem; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i data-lucide="sun" style="width: 20px; height: 20px;"></i>
+                </button>
                 <div class="profile-dropdown">
                     <div class="profile-trigger">
                         <div

@@ -19,7 +19,7 @@
         <div class="search-wrapper" style="flex: 1; min-width: 350px; max-width: 500px; position: relative;">
             <i data-lucide="search" class="search-icon" style="width: 20px; height: 20px;"></i>
             <input type="text" id="searchInput" placeholder="Search by book title or author..."
-                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s;">
+                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s; background: var(--bg-surface); color: var(--text-main);">
         </div>
     </header>
 
@@ -83,7 +83,7 @@
 
     <!-- Filters Bar -->
     <div
-        style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem;">
+        style="background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <!-- Filters -->
             <div style="display: flex; gap: 1rem; flex-wrap: wrap; flex: 1;">
@@ -118,7 +118,7 @@
 
     <!-- History Table -->
     <div
-        style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
+        style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
@@ -139,10 +139,8 @@
                 </thead>
                 <tbody id="historyTableBody">
                     {% for record in history %}
-                    <tr class="history-row" 
-                        data-title="{{ record.book.Title|lower }}" 
-                        data-author="{{ record.book.Author|lower }}"
-                        data-fine="{{ record.fine }}"
+                    <tr class="history-row" data-title="{{ record.book.Title|lower }}"
+                        data-author="{{ record.book.Author|lower }}" data-fine="{{ record.fine }}"
                         data-borrow-date="{{ record.borrow_date|date:'Y-m-d' }}"
                         data-return-date="{{ record.return_date|date:'Y-m-d'|default:'' }}"
                         style="border-bottom: 1px solid var(--border-light); transition: all 0.2s;">
@@ -157,13 +155,15 @@
                                     {% else %}
                                     <div
                                         style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                                        <i data-lucide="book" style="width: 24px; height: 24px; color: white; opacity: 0.5;"></i>
+                                        <i data-lucide="book"
+                                            style="width: 24px; height: 24px; color: white; opacity: 0.5;"></i>
                                     </div>
                                     {% endif %}
                                 </div>
                                 <!-- Book Info -->
                                 <div>
-                                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; font-size: 1rem;">
+                                    <div
+                                        style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; font-size: 1rem;">
                                         {{ record.book.Title }}
                                     </div>
                                     <div style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 500;">
@@ -173,15 +173,19 @@
                             </div>
                         </td>
                         <td style="padding: 1.25rem 1.5rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-weight: 500;">
-                                <i data-lucide="calendar-check" style="width: 16px; height: 16px; color: var(--text-muted);"></i>
+                            <div
+                                style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-weight: 500;">
+                                <i data-lucide="calendar-check"
+                                    style="width: 16px; height: 16px; color: var(--text-muted);"></i>
                                 <span>{{ record.borrow_date|date:"M d, Y" }}</span>
                             </div>
                         </td>
                         <td style="padding: 1.25rem 1.5rem;">
                             {% if record.return_date %}
-                            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-weight: 500;">
-                                <i data-lucide="calendar-x" style="width: 16px; height: 16px; color: var(--text-muted);"></i>
+                            <div
+                                style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-weight: 500;">
+                                <i data-lucide="calendar-x"
+                                    style="width: 16px; height: 16px; color: var(--text-muted);"></i>
                                 <span>{{ record.return_date|date:"M d, Y" }}</span>
                             </div>
                             {% else %}
@@ -191,7 +195,8 @@
                         <td style="padding: 1.25rem 1.5rem;">
                             {% if record.fine > 0 %}
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <i data-lucide="alert-circle" style="width: 16px; height: 16px; color: var(--danger);"></i>
+                                <i data-lucide="alert-circle"
+                                    style="width: 16px; height: 16px; color: var(--danger);"></i>
                                 <span style="color: var(--danger); font-weight: 800; font-size: 1.05rem;">PKR {{ record.fine }}</span>
                             </div>
                             {% else %}
@@ -210,8 +215,10 @@
                                     <i data-lucide="history" style="width: 80px; height: 80px;"></i>
                                 </div>
                                 <h3 class="empty-state-title" style="font-size: 2rem;">No History Available</h3>
-                                <p class="empty-state-description" style="font-size: 1.1rem;">You haven't borrowed any books yet. Start exploring our collection!</p>
-                                <a href="{% url 'available_books' %}" class="btn btn-primary" style="margin-top: 2rem; padding: 1rem 2rem; font-size: 1.05rem;">
+                                <p class="empty-state-description" style="font-size: 1.1rem;">You haven't borrowed any
+                                    books yet. Start exploring our collection!</p>
+                                <a href="{% url 'available_books' %}" class="btn btn-primary"
+                                    style="margin-top: 2rem; padding: 1rem 2rem; font-size: 1.05rem;">
                                     <i data-lucide="library" style="width: 20px; height: 20px;"></i>
                                     Browse Books
                                 </a>
@@ -230,8 +237,10 @@
                     <i data-lucide="search-x" style="width: 80px; height: 80px;"></i>
                 </div>
                 <h3 class="empty-state-title" style="font-size: 2rem;">No Results Found</h3>
-                <p class="empty-state-description" style="font-size: 1.1rem;">Try adjusting your search or filter criteria</p>
-                <button class="btn btn-primary" style="margin-top: 2rem; padding: 1rem 2rem; font-size: 1.05rem;" data-reset-filters>
+                <p class="empty-state-description" style="font-size: 1.1rem;">Try adjusting your search or filter
+                    criteria</p>
+                <button class="btn btn-primary" style="margin-top: 2rem; padding: 1rem 2rem; font-size: 1.05rem;"
+                    data-reset-filters>
                     <i data-lucide="rotate-ccw" style="width: 20px; height: 20px;"></i>
                     Reset Filters
                 </button>

@@ -19,7 +19,7 @@
         <div class="search-wrapper" style="flex: 1; min-width: 350px; max-width: 500px; position: relative;">
             <i data-lucide="search" class="search-icon" style="width: 20px; height: 20px;"></i>
             <input type="text" id="searchInput" placeholder="Search by title, author, or genre..."
-                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s;">
+                style="padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-light); border-radius: var(--radius-lg); width: 100%; font-size: 1rem; transition: all 0.3s; background: var(--bg-surface); color: var(--text-main);">
         </div>
     </header>
 
@@ -38,7 +38,7 @@
 
     <!-- Filters and View Toggle Bar -->
     <div
-        style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem;">
+        style="background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <!-- Filters -->
             <div style="display: flex; gap: 1rem; flex-wrap: wrap; flex: 1;">
@@ -76,7 +76,7 @@
             <div
                 style="display: flex; gap: 0.5rem; background: var(--bg-body); padding: 0.25rem; border-radius: var(--radius-md);">
                 <button id="gridViewBtn" class="btn btn-sm"
-                    style="background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    style="background: var(--bg-surface); box-shadow: 0 2px 4px var(--shadow-sm);">
                     <i data-lucide="grid-3x3" style="width: 18px; height: 18px;"></i>
                 </button>
                 <button id="listViewBtn" class="btn btn-sm btn-secondary">
@@ -135,7 +135,7 @@
         <div class="book-card hover-lift" data-title="{{ book.Title|lower }}" data-author="{{ book.Author|lower }}"
             data-genre="{{ book.Genre|lower }}" data-price="{{ book.Price }}"
             data-date="{{ book.Published_date|date:'Y-m-d' }}"
-            style="background: white; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s; cursor: pointer;">
+            style="background: var(--bg-surface); border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s; cursor: pointer;">
 
             <!-- Book Cover with Overlay -->
             <div
@@ -166,8 +166,7 @@
 
                 <!-- Quick View Overlay -->
                 <div class="book-overlay">
-                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary"
-                        style="transform: scale(1.1);">
+                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary" style="transform: scale(1.1);">
                         <i data-lucide="book-plus" style="width: 20px; height: 20px;"></i>
                         Borrow Now
                     </a>
@@ -233,7 +232,7 @@
     <!-- Books List View (Hidden by default) -->
     <div id="listView" style="display: none;">
         <div
-            style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
+            style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
             {% for book in books %}
             <div class="book-card" data-title="{{ book.Title|lower }}" data-author="{{ book.Author|lower }}"
                 data-genre="{{ book.Genre|lower }}" data-price="{{ book.Price }}"
@@ -273,7 +272,8 @@
                                 {{ book.Pages }} pages
                             </span>
                             <span class="role-badge"
-                                style="background: rgba(16, 185, 129, 0.1); color: var(--success);">{{ book.Published_date|date:"Y" }}</span>
+                                style="background: rgba(16, 185, 129, 0.1); color: var(--success);">{{
+                                book.Published_date|date:"Y" }}</span>
                         </div>
                     </div>
                 </div>
@@ -288,8 +288,7 @@
                         <div style="font-weight: 800; color: var(--primary); font-size: 1.5rem;">PKR {{ book.Price }}
                         </div>
                     </div>
-                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary"
-                        style="width: 100%;">
+                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary" style="width: 100%;">
                         <i data-lucide="book-plus" style="width: 18px; height: 18px;"></i>
                         Borrow Now
                     </a>

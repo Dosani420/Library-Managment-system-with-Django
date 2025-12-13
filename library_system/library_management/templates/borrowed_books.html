@@ -84,7 +84,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <div>
                 <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.25rem;">Currently Reading</h2>
-                <p style="color: var(--text-muted);">{{ active_loans|length }} active loan{{ active_loans|length|pluralize }}</p>
+                <p style="color: var(--text-muted);">{{ active_loans|length }} active loan{{
+                    active_loans|length|pluralize }}</p>
             </div>
             <span
                 style="background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.9rem; font-weight: 700;">
@@ -96,7 +97,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
             {% for record in active_loans %}
             <div class="hover-lift"
-                style="background: white; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
+                style="background: var(--bg-surface); border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
                 <div style="display: flex; gap: 1.5rem; padding: 1.5rem;">
                     <!-- Book Cover -->
                     <div
@@ -115,9 +116,11 @@
                     <!-- Book Details -->
                     <div style="flex: 1; display: flex; flex-direction: column;">
                         <h3
-                            style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; line-height: 1.3; color: var(--text-main);">{{ record.book.Title }}</h3>
+                            style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; line-height: 1.3; color: var(--text-main);">
+                            {{ record.book.Title }}</h3>
                         <p
-                            style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem; font-weight: 500;">by {{ record.book.Author }}</p>
+                            style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem; font-weight: 500;">
+                            by {{ record.book.Author }}</p>
 
                         <!-- Dates -->
                         <div
@@ -188,7 +191,7 @@
         </div>
 
         <div
-            style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
+            style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden;">
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
@@ -219,22 +222,27 @@
                         {% for record in history %}
                         <tr style="border-bottom: 1px solid var(--border-light); transition: all 0.2s;">
                             <td style="padding: 1.25rem 1.5rem;">
-                                <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">{{ record.book.Title }}</div>
-                                <div style="font-size: 0.9rem; color: var(--text-secondary);">{{ record.book.Author }}</div>
+                                <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">{{
+                                    record.book.Title }}</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">{{ record.book.Author }}
+                                </div>
                             </td>
-                            <td style="padding: 1.25rem 1.5rem; color: var(--text-secondary); font-weight: 500;">{{ record.borrow_date }}</td>
-                            <td style="padding: 1.25rem 1.5rem; color: var(--text-secondary); font-weight: 500;">{{ record.return_date }}</td>
-                            
+                            <td style="padding: 1.25rem 1.5rem; color: var(--text-secondary); font-weight: 500;">{{
+                                record.borrow_date }}</td>
+                            <td style="padding: 1.25rem 1.5rem; color: var(--text-secondary); font-weight: 500;">{{
+                                record.return_date }}</td>
+
                             <td style="padding: 1.25rem 1.5rem;">
                                 <span
                                     style="background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 0.4rem 0.8rem; border-radius: 999px; font-size: 0.85rem; font-weight: 700;">
                                     {{ record.borrow_duration.days }} Days
                                 </span>
                             </td>
-                            
+
                             <td style="padding: 1.25rem 1.5rem;">
                                 {% if record.fine > 0 %}
-                                <span style="color: var(--danger); font-weight: 800; font-size: 1.05rem;">PKR {{ record.fine }}</span>
+                                <span style="color: var(--danger); font-weight: 800; font-size: 1.05rem;">PKR {{
+                                    record.fine }}</span>
                                 {% else %}
                                 <span style="color: var(--success); font-weight: 700;">
                                     <i data-lucide="check" style="width: 16px; height: 16px;"></i>

@@ -152,7 +152,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;">
             {% for book in recent_books %}
             <div class="book-card hover-lift"
-                style="background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s;">
+                style="background: var(--bg-surface); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s;">
                 <div
                     style="position: relative; overflow: hidden; height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     {% if book.Image %}

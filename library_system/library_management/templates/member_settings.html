@@ -4,7 +4,7 @@
 {% block title %}Settings - Member Dashboard{% endblock title %}
 
 {% block body %}
-<div class="main-content">
+<div class="main-content" data-saved-theme="{% if logged_in.theme %}{{ logged_in.theme }}{% else %}light{% endif %}">
     <!-- Enhanced Header -->
     <header class="dashboard-header" style="margin-bottom: 2.5rem;">
         <div>
@@ -32,7 +32,8 @@
 
     <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem;">
         <!-- Settings Sidebar Navigation -->
-        <aside style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 1.5rem; height: fit-content; position: sticky; top: 2rem;">
+        <aside
+            style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 1.5rem; height: fit-content; position: sticky; top: 2rem;">
             <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
                 <button class="settings-nav-item active" data-section="profile">
                     <i data-lucide="user" style="width: 20px; height: 20px;"></i>
@@ -75,14 +76,16 @@
             <!-- Profile Settings Section -->
             <section class="settings-section" id="profile-section" data-section="profile">
                 <div
-                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <div
                             style="width: 64px; height: 64px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;">
-                            {{ logged_in.user.first_name|slice:":1"|default:"U" }}{{ logged_in.user.last_name|slice:":1"|default:"" }}
+                            {{ logged_in.user.first_name|slice:":1"|default:"U" }}{{
+                            logged_in.user.last_name|slice:":1"|default:"" }}
                         </div>
                         <div>
-                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Profile Settings</h2>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Profile Settings
+                            </h2>
                             <p style="color: var(--text-secondary);">Manage your personal information</p>
                         </div>
                     </div>
@@ -123,7 +126,8 @@
 
                             <div class="form-group">
                                 <label class="form-label" for="username">
-                                    <i data-lucide="at-sign" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
+                                    <i data-lucide="at-sign"
+                                        style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
                                     Username
                                 </label>
                                 <input type="text" name="username" id="username" class="form-control"
@@ -145,20 +149,23 @@
                                 <i data-lucide="map-pin" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
                                 Address
                             </label>
-                            <textarea name="address" id="address" class="form-control" rows="3" placeholder="Enter your address"
-                                disabled></textarea>
+                            <textarea name="address" id="address" class="form-control" rows="3"
+                                placeholder="Enter your address" disabled></textarea>
                         </div>
 
                         <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                            <button type="button" class="btn btn-secondary" id="editProfileBtn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <button type="button" class="btn btn-secondary" id="editProfileBtn"
+                                style="display: inline-flex; align-items: center; gap: 0.5rem;">
                                 <i data-lucide="edit" style="width: 18px; height: 18px;"></i>
                                 Edit Profile
                             </button>
-                            <button type="submit" class="btn btn-primary" id="saveProfileBtn" disabled style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <button type="submit" class="btn btn-primary" id="saveProfileBtn" disabled
+                                style="display: inline-flex; align-items: center; gap: 0.5rem;">
                                 <i data-lucide="save" style="width: 18px; height: 18px;"></i>
                                 Save Changes
                             </button>
-                            <button type="button" class="btn btn-secondary" id="cancelProfileBtn" style="display: none; align-items: center; gap: 0.5rem;">
+                            <button type="button" class="btn btn-secondary" id="cancelProfileBtn"
+                                style="display: none; align-items: center; gap: 0.5rem;">
                                 <i data-lucide="x" style="width: 18px; height: 18px;"></i>
                                 Cancel
                             </button>
@@ -170,14 +177,15 @@
             <!-- Account & Security Section -->
             <section class="settings-section" id="security-section" data-section="security" style="display: none;">
                 <div
-                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <div
                             style="width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
                             <i data-lucide="shield" style="width: 24px; height: 24px; color: var(--danger);"></i>
                         </div>
                         <div>
-                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Account & Security</h2>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Account & Security
+                            </h2>
                             <p style="color: var(--text-secondary);">Manage your account security settings</p>
                         </div>
                     </div>
@@ -186,10 +194,13 @@
                         <!-- Change Password Card -->
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                                 <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Change Password</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Update your password to keep your account secure</p>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Change
+                                        Password</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Update your password to
+                                        keep your account secure</p>
                                 </div>
                                 <a href="{% url 'forget_password' %}" class="btn btn-primary">
                                     <i data-lucide="key" style="width: 18px; height: 18px;"></i>
@@ -203,12 +214,15 @@
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Login Activity</h3>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Login
+                                        Activity</h3>
                                     <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                                        Last login: {% if logged_in.login_time %}{{ logged_in.login_time|date:"M d, Y H:i" }}{% else %}Never{% endif %}
+                                        Last login: {% if logged_in.login_time %}{{ logged_in.login_time|date:"M d, Y
+                                        H:i" }}{% else %}Never{% endif %}
                                     </p>
                                     <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                                        Status: <span style="color: var(--success); font-weight: 600;">{{ logged_in.status }}</span>
+                                        Status: <span style="color: var(--success); font-weight: 600;">{{
+                                            logged_in.status }}</span>
                                     </p>
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-view-activity>
@@ -222,9 +236,10 @@
             </section>
 
             <!-- Notifications Section -->
-            <section class="settings-section" id="notifications-section" data-section="notifications" style="display: none;">
+            <section class="settings-section" id="notifications-section" data-section="notifications"
+                style="display: none;">
                 <div
-                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <div
                             style="width: 48px; height: 48px; background: rgba(245, 158, 11, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
@@ -243,14 +258,19 @@
                         <!-- Member Notifications -->
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Due Date Reminders</h3>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Due Date Reminders
+                            </h3>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                                 <div>
-                                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable Due Date Reminders</div>
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Get reminders before your books are due</div>
+                                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable Due Date Reminders
+                                    </div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Get reminders before
+                                        your books are due</div>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox" name="due_date_reminders" checked data-toggle="due-date-reminders">
+                                    <input type="checkbox" name="due_date_reminders" checked
+                                        data-toggle="due-date-reminders">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -258,14 +278,19 @@
 
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Overdue Notifications</h3>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Overdue Notifications
+                            </h3>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                                 <div>
-                                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable Overdue Notifications</div>
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive notifications when books become overdue</div>
+                                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable Overdue Notifications
+                                    </div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive notifications
+                                        when books become overdue</div>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox" name="overdue_notifications" checked data-toggle="overdue-notifications">
+                                    <input type="checkbox" name="overdue_notifications" checked
+                                        data-toggle="overdue-notifications">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -273,14 +298,18 @@
 
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">New Arrival Alerts</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">New Arrival Alerts
+                            </h3>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable New Arrival Alerts</div>
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Get notified when new books arrive</div>
+                                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable New Arrival Alerts
+                                    </div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Get notified when new
+                                        books arrive</div>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox" name="new_arrival_alerts" checked data-toggle="new-arrival-alerts">
+                                    <input type="checkbox" name="new_arrival_alerts" checked
+                                        data-toggle="new-arrival-alerts">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -289,22 +318,26 @@
                         <!-- Email/SMS Settings -->
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Notification Channels</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Notification Channels
+                            </h3>
                             <div style="display: flex; flex-direction: column; gap: 1rem;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <div style="font-weight: 600; margin-bottom: 0.25rem;">Email Notifications</div>
-                                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive notifications via email</div>
+                                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive
+                                            notifications via email</div>
                                     </div>
                                     <label class="toggle-switch">
-                                        <input type="checkbox" name="email_notifications" checked data-toggle="email-notifications">
+                                        <input type="checkbox" name="email_notifications" checked
+                                            data-toggle="email-notifications">
                                         <span class="toggle-slider"></span>
                                     </label>
                                 </div>
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <div style="font-weight: 600; margin-bottom: 0.25rem;">SMS Notifications</div>
-                                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive notifications via SMS</div>
+                                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Receive
+                                            notifications via SMS</div>
                                     </div>
                                     <label class="toggle-switch">
                                         <input type="checkbox" name="sms_notifications" data-toggle="sms-notifications">
@@ -323,16 +356,18 @@
             </section>
 
             <!-- Preferences Section -->
-            <section class="settings-section" id="preferences-section" data-section="preferences" style="display: none;">
+            <section class="settings-section" id="preferences-section" data-section="preferences"
+                style="display: none;">
                 <div
-                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <div
                             style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
                             <i data-lucide="palette" style="width: 24px; height: 24px; color: var(--success);"></i>
                         </div>
                         <div>
-                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">App Preferences</h2>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">App Preferences
+                            </h2>
                             <p style="color: var(--text-secondary);">Customize your experience</p>
                         </div>
                     </div>
@@ -346,12 +381,17 @@
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
                             <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Theme</h3>
                             <div style="display: flex; gap: 1rem;">
-                                <label style="flex: 1; border: 2px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; transition: all 0.2s;" class="theme-option" data-theme="light">
-                                    <input type="radio" name="theme" value="light" checked style="margin-right: 0.5rem;">
+                                <label
+                                    style="flex: 1; border: 2px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; transition: all 0.2s;"
+                                    class="theme-option" data-theme="light">
+                                    <input type="radio" name="theme" value="light" checked
+                                        style="margin-right: 0.5rem;">
                                     <i data-lucide="sun" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
                                     <span style="font-weight: 600;">Light</span>
                                 </label>
-                                <label style="flex: 1; border: 2px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; transition: all 0.2s;" class="theme-option" data-theme="dark">
+                                <label
+                                    style="flex: 1; border: 2px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; transition: all 0.2s;"
+                                    class="theme-option" data-theme="dark">
                                     <input type="radio" name="theme" value="dark" style="margin-right: 0.5rem;">
                                     <i data-lucide="moon" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
                                     <span style="font-weight: 600;">Dark</span>
@@ -376,29 +416,36 @@
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
                             <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Preferred Genres</h3>
-                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Select your favorite genres for personalized recommendations</p>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Select your
+                                favorite genres for personalized recommendations</p>
                             <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
-                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
+                                <label
+                                    style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
                                     <input type="checkbox" name="genres" value="fiction">
                                     <span>Fiction</span>
                                 </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
+                                <label
+                                    style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
                                     <input type="checkbox" name="genres" value="nonfiction">
                                     <span>Non-Fiction</span>
                                 </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
+                                <label
+                                    style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
                                     <input type="checkbox" name="genres" value="biography">
                                     <span>Biography</span>
                                 </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
+                                <label
+                                    style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
                                     <input type="checkbox" name="genres" value="mystery">
                                     <span>Mystery</span>
                                 </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
+                                <label
+                                    style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
                                     <input type="checkbox" name="genres" value="romance">
                                     <span>Romance</span>
                                 </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
+                                <label
+                                    style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;">
                                     <input type="checkbox" name="genres" value="thriller">
                                     <span>Thriller</span>
                                 </label>
@@ -414,16 +461,18 @@
             </section>
 
             <!-- Library Usage Settings -->
-            <section class="settings-section" id="library-usage-section" data-section="library-usage" style="display: none;">
+            <section class="settings-section" id="library-usage-section" data-section="library-usage"
+                style="display: none;">
                 <div
-                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <div
                             style="width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
                             <i data-lucide="book-open" style="width: 24px; height: 24px; color: var(--primary);"></i>
                         </div>
                         <div>
-                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Library Usage Settings</h2>
+                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Library Usage
+                                Settings</h2>
                             <p style="color: var(--text-secondary);">Customize your library experience</p>
                         </div>
                     </div>
@@ -435,7 +484,8 @@
                         <!-- Preferred Pickup Branch -->
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Preferred Pickup Branch</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Preferred Pickup
+                                Branch</h3>
                             <div class="form-group">
                                 <select name="pickup_branch" id="pickup_branch" class="form-control">
                                     <option value="main">Main Library</option>
@@ -451,11 +501,13 @@
                         <!-- Auto-Reserve Similar Books -->
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Auto-Reserve Similar Books</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Auto-Reserve Similar
+                                Books</h3>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
                                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Enable Auto-Reservation</div>
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Automatically reserve books similar to your reading history</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Automatically reserve
+                                        books similar to your reading history</div>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" name="auto_reserve" data-toggle="auto-reserve">
@@ -475,7 +527,7 @@
             <!-- Privacy Section -->
             <section class="settings-section" id="privacy-section" data-section="privacy" style="display: none;">
                 <div
-                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <div
                             style="width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
@@ -493,8 +545,10 @@
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Hide Reading History</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Hide your reading history from other users</p>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Hide
+                                        Reading History</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Hide your reading
+                                        history from other users</p>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" name="hide_history" data-toggle="hide-history">
@@ -508,8 +562,10 @@
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Data Download Request</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Request a copy of your account data</p>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Data
+                                        Download Request</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Request a copy of your
+                                        account data</p>
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-request-data>
                                     <i data-lucide="download" style="width: 18px; height: 18px;"></i>
@@ -524,7 +580,7 @@
             <!-- Support Section -->
             <section class="settings-section" id="support-section" data-section="support" style="display: none;">
                 <div
-                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <div
                             style="width: 48px; height: 48px; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
@@ -540,7 +596,8 @@
                         <!-- Member Support Options -->
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Contact Library Staff</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Contact Library Staff
+                            </h3>
                             <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
                                 {% csrf_token %}
                                 <input type="hidden" name="form_type" value="contact_staff">
@@ -563,10 +620,13 @@
 
                         <div
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                                 <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Report an Issue</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Report technical problems or bugs</p>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Report an
+                                        Issue</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Report technical
+                                        problems or bugs</p>
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-report-issue>
                                     <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i>
@@ -579,8 +639,10 @@
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Help & FAQ</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Browse frequently asked questions</p>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Help & FAQ
+                                    </h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Browse frequently asked
+                                        questions</p>
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-help-faq>
                                     <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
@@ -595,14 +657,17 @@
             <!-- Danger Zone Section -->
             <section class="settings-section" id="danger-section" data-section="danger" style="display: none;">
                 <div
-                    style="background: white; border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem; border: 2px solid var(--danger);">
+                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem; border: 2px solid var(--danger);">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <div
                             style="width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                            <i data-lucide="alert-triangle" style="width: 24px; height: 24px; color: var(--danger);"></i>
+                            <i data-lucide="alert-triangle"
+                                style="width: 24px; height: 24px; color: var(--danger);"></i>
                         </div>
                         <div>
-                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; color: var(--danger);">Danger Zone</h2>
+                            <h2
+                                style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; color: var(--danger);">
+                                Danger Zone</h2>
                             <p style="color: var(--text-secondary);">Irreversible and destructive actions</p>
                         </div>
                     </div>
@@ -613,8 +678,10 @@
                             style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem; background: var(--bg-body);">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Log Out</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Sign out of your account</p>
+                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Log Out
+                                    </h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Sign out of your account
+                                    </p>
                                 </div>
                                 <a href="{% url 'logout' %}" class="btn btn-secondary">
                                     <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
@@ -628,9 +695,14 @@
                             style="border: 2px solid var(--danger); border-radius: var(--radius-lg); padding: 1.5rem; background: rgba(239, 68, 68, 0.05);">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--danger);">Delete Account</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Permanently delete your account and all associated data</p>
-                                    <p style="color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600;">⚠️ This action cannot be undone</p>
+                                    <h3
+                                        style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--danger);">
+                                        Delete Account</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Permanently delete your
+                                        account and all associated data</p>
+                                    <p
+                                        style="color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600;">
+                                        ⚠️ This action cannot be undone</p>
                                 </div>
                                 <button type="button" class="btn" data-delete-account
                                     style="background: var(--danger); color: white;">
@@ -647,4 +719,3 @@
 </div>
 
 {% endblock body %}
-

@@ -6,7 +6,7 @@
 {% block body %}
 <div class="form-container" style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
     <div class="card"
-        style="background: white; border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+        style="background: var(--bg-surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
 
         <div class="form-header" style="text-align: center; margin-bottom: 2.5rem;">
             <div
@@ -32,7 +32,7 @@
                             <i data-lucide="type"
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
                             <input type="text" name="title" id="title" value="{{ book.Title }}" required
-                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; transition: all 0.2s;">
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; transition: all 0.2s; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                     </div>
 
@@ -43,7 +43,7 @@
                             <i data-lucide="user"
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
                             <input type="text" name="author" id="author" value="{{ book.Author }}" required
-                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                     </div>
 
@@ -54,7 +54,7 @@
                             <i data-lucide="barcode"
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
                             <input type="text" name="isbn" id="isbn" value="{{ book.ISBN }}" required
-                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                     </div>
 
@@ -65,7 +65,7 @@
                             <i data-lucide="bookmark"
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
                             <select name="genre" id="genre" required
-                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background-color: white; appearance: none;">
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background-color: var(--bg-surface); color: var(--text-main); appearance: none;">
                                 <option value="fiction" {% if book.Genre == 'fiction' %}selected{% endif %}>Fiction
                                 </option>
                                 <option value="nonfiction" {% if book.Genre == 'nonfiction' %}selected{% endif %}>
@@ -102,7 +102,7 @@
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
                             <input type="date" name="published_date" id="published_date"
                                 value="{{ book.Published_date|date:'Y-m-d' }}" required
-                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                     </div>
 
@@ -115,7 +115,7 @@
                                 <span
                                     style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">Rs</span>
                                 <input type="number" name="price" id="price" value="{{ book.Price }}" required
-                                    style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                    style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                             </div>
                         </div>
 
@@ -123,7 +123,7 @@
                             <label for="pages"
                                 style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Pages</label>
                             <input type="number" name="pages" id="pages" value="{{ book.Pages }}" required
-                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                     </div>
 

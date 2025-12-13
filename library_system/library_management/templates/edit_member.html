@@ -6,7 +6,7 @@
 {% block body %}
 <div class="form-container" style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
     <div class="card"
-        style="background: white; border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+        style="background: var(--bg-surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
 
         <div class="form-header" style="text-align: center; margin-bottom: 2.5rem;">
             <div
@@ -35,7 +35,7 @@
                                 Name</label>
                             <input type="text" name="first_name" id="first_name" value="{{ member.user.first_name }}"
                                 required
-                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                         <div class="form-group" style="margin-bottom: 1.5rem;">
                             <label for="last_name"
@@ -43,7 +43,7 @@
                                 Name</label>
                             <input type="text" name="last_name" id="last_name" value="{{ member.user.last_name }}"
                                 required
-                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                     </div>
 
@@ -55,7 +55,7 @@
                             <i data-lucide="mail"
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
                             <input type="email" name="email" id="email" value="{{ member.user.email }}" required
-                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                     </div>
 
@@ -63,7 +63,7 @@
                         <label for="gender"
                             style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Gender</label>
                         <select name="gender" id="gender"
-                            style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background-color: white;">
+                            style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background-color: var(--bg-surface); color: var(--text-main);">
                             <option value="Male" {% if member.gender == 'Male' %}selected{% endif %}>Male</option>
                             <option value="Female" {% if member.gender == 'Female' %}selected{% endif %}>Female</option>
                         </select>
@@ -74,9 +74,10 @@
                             style="display: block; font-weight: 500; color: var(--text-main); margin-bottom: 0.5rem;">Date
                             of Birth</label>
                         <input type="date" name="dob" id="dob" value="{{ member.date_of_birth|date:'Y-m-d' }}" required
-                            style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                            style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px;">Current Age:
-                            <strong>{{ member.get_age }} years</strong></p>
+                            <strong>{{ member.get_age }} years</strong>
+                        </p>
                     </div>
                 </div>
 
@@ -93,7 +94,7 @@
                             <i data-lucide="at-sign"
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
                             <input type="text" name="username" id="username" value="{{ member.user.username }}" required
-                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem;">
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.95rem; background: var(--bg-surface); color: var(--text-main);">
                         </div>
                     </div>
 

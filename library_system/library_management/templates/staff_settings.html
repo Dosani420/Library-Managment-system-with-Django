@@ -32,7 +32,7 @@
 
     <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem;">
         <!-- Settings Sidebar Navigation -->
-        <aside
+        <aside class="settings-nav"
             style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 1.5rem; height: fit-content; position: sticky; top: 2rem;">
             <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
                 <button class="settings-nav-item active" data-section="profile">
@@ -166,92 +166,147 @@
 
             <!-- Account & Security Section -->
             <section class="settings-section" id="security-section" data-section="security" style="display: none;">
-                <div
-                    style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
-                        <div
-                            style="width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                            <i data-lucide="shield" style="width: 24px; height: 24px; color: var(--danger);"></i>
-                        </div>
-                        <div>
-                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Account & Security
-                            </h2>
-                            <p style="color: var(--text-secondary);">Manage your account security settings</p>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                        <!-- Change Password Card -->
-                        <div
-                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Change
-                                        Password</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Update your password to
-                                        keep your account secure</p>
+                <div class="flip-container" id="passwordFlip">
+                    <div class="flip-card">
+                        <!-- FRONT SIDE -->
+                        <div class="flip-front" id="flipFront" style=" background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem;">
+                            <div>
+                                <div style= "background: var(--bg-surface); display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                                    <div
+                                        style="width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                                        <i data-lucide="shield" style="width: 24px; height: 24px; color: var(--danger);"></i>
+                                    </div>
+                                    <div>
+                                        <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Account & Security
+                                        </h2>
+                                        <p style="color: var(--text-secondary);">Manage your account security settings</p>
+                                    </div>
                                 </div>
-                                <a href="{% url 'forget_password' %}" class="btn btn-primary">
-                                    <i data-lucide="key" style="width: 18px; height: 18px;"></i>
-                                    Change Password
-                                </a>
+
+                                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                    <!-- Change Password Card -->
+                                    <div
+                                        style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                                        <div
+                                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                            <div>
+                                                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Change
+                                                    Password</h3>
+                                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Update your password to
+                                                    keep your account secure</p>
+                                            </div>
+                                            <button class="btn btn-primary" onclick="flipPasswordCard()">
+                                                <i data-lucide="key" style="width: 18px; height: 18px;"></i>
+                                                Change Password
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Login Activity Card -->
+                                    <div
+                                        style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Login
+                                                    Activity</h3>
+                                                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                                    Last login: {% if logged_in.login_time %}{{ logged_in.login_time|date:"M d, Y H:i" }}{% else %}Never{% endif %}
+                                                </p>
+                                                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                                    Status: <span style="color: var(--success); font-weight: 600;">{{ logged_in.status }}</span>
+                                                </p>
+                                            </div>
+                                            <button type="button" class="btn btn-secondary" data-view-activity>
+                                                <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
+                                                View Activity
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Two-Factor Authentication Card -->
+                                    <div
+                                        style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Two-Factor
+                                                    Authentication</h3>
+                                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Add an extra layer of
+                                                    security to your account</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" name="two_factor" data-toggle="two-factor">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Connected Devices Card -->
+                                    <div
+                                        style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Manage
+                                                    Connected Devices</h3>
+                                                <p style="color: var(--text-secondary); font-size: 0.9rem;">View and manage devices
+                                                    that have access to your account</p>
+                                            </div>
+                                            <button type="button" class="btn btn-secondary" data-manage-devices>
+                                                <i data-lucide="smartphone" style="width: 18px; height: 18px;"></i>
+                                                Manage Devices
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Login Activity Card -->
-                        <div
-                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Login
-                                        Activity</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                                        Last login: {% if logged_in.login_time %}{{ logged_in.login_time|date:"M d, Y H:i" }}{% else %}Never{% endif %}
-                                    </p>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                                        Status: <span style="color: var(--success); font-weight: 600;">{{ logged_in.status }}</span>
-                                    </p>
+                        <!-- BACK SIDE -->
+                        <div class="flip-back" id="flipBack"
+                            style="background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid var(--border-light);">
+                            <div class="auth-header">
+                                <h1 class="auth-title">Reset Password</h1>
+                                <p class="auth-subtitle">Enter your current password and choose a new one to update your account security.
+                                </p>
+                            </div>
+
+                            <form method="post">
+                                {% csrf_token %}
+
+                                {% if messages %}
+                                {% for message in messages %}
+                                <div
+                                    style="padding: 1rem; background: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.1); color: var(--danger){% else %}rgba(16, 185, 129, 0.1); color: var(--success){% endif %}; border-radius: var(--radius-md); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                                    {{ message }}
                                 </div>
-                                <button type="button" class="btn btn-secondary" data-view-activity>
-                                    <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
-                                    View Activity
+                                {% endfor %}
+                                {% endif %}
+
+                                <div class="form-group">
+                                    <label class="form-label" for="current_pass">Current Password</label>
+                                    <input type="password" name="current_pass" id="current_pass" class="form-control"
+                                        placeholder="Enter your current password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="new_pass">New Password</label>
+                                    <input type="password" name="new_pass" id="new_pass" class="form-control"
+                                        placeholder="Enter your new password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="confirm_pass">Confirm Password</label>
+                                    <input type="password" name="confirm_pass" id="confirm_pass" class="form-control"
+                                        placeholder="Re-enter your new password" required>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                                    Reset Password
                                 </button>
-                            </div>
-                        </div>
 
-                        <!-- Two-Factor Authentication Card -->
-                        <div
-                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Two-Factor
-                                        Authentication</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Add an extra layer of
-                                        security to your account</p>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" name="two_factor" data-toggle="two-factor">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Connected Devices Card -->
-                        <div
-                            style="border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Manage
-                                        Connected Devices</h3>
-                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">View and manage devices
-                                        that have access to your account</p>
-                                </div>
-                                <button type="button" class="btn btn-secondary" data-manage-devices>
-                                    <i data-lucide="smartphone" style="width: 18px; height: 18px;"></i>
-                                    Manage Devices
-                                </button>
-                            </div>
+                                <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+                                    Remember your password? <button type="button" class="btn btn-secondary" onclick="flipPasswordCard()" style="color: var(--primary); font-weight: 600;">Cancel</button>
+                                </p>
+                            </form>
                         </div>
                     </div>
                 </div>

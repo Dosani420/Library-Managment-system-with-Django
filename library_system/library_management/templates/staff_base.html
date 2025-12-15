@@ -90,13 +90,13 @@
                             {{ user.first_name|slice:":1"|default:"S" }}
                             {% endif %}
                         </div>
-                        <span style="font-weight: 600; font-size: 0.9rem;">{{ user.first_name }}</span>
-                        <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i>
+                        {% comment %} <span style="font-weight: 600; font-size: 0.9rem;">{{ user.first_name }}</span> {% endcomment %}
+                        {% comment %} <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i> {% endcomment %}
                     </div>
                     <div id="myDropdown" class="dropdown-content">
-                        <a href="#">My Profile</a>
+                        <a href="{% url 'settings' %}">My Profile</a>
                         <a href="{% url 'forget_password' %}">Change Password</a>
-                        <a href="#">Help & Support</a>
+                        <a href="{% url 'settings' %}?section=support">Help & Support</a>
                         <div style="border-top: 1px solid var(--border-light); margin: 0.2rem 0;"></div>
                         <a href="{% url 'logout' %}" style="color: var(--danger);">Logout</a>
                     </div>

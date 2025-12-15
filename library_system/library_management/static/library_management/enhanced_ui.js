@@ -80,6 +80,14 @@ class ToastManager {
 const toast = new ToastManager();
 
 // ========================================
+// Flip card 
+// ========================================
+function flipPasswordCard() {
+    document.getElementById("passwordFlip").classList.toggle("flipped");
+}
+
+
+// ========================================
 // LOADING STATES
 // ========================================
 
@@ -1035,40 +1043,8 @@ function initSettingsPage() {
     // Check if using tab-based navigation (staff) or sidebar navigation (member)
     const tabButtons = document.querySelectorAll('.staff-tab-btn');
     const navItems = document.querySelectorAll('.settings-nav-item');
-    const tabContents = document.querySelectorAll('.staff-tab-content');
     const sections = document.querySelectorAll('.settings-section');
 
-    // Tab-based navigation (Staff Settings)
-    if (tabButtons.length > 0) {
-        // Show first tab by default
-        if (tabContents.length > 0) {
-            tabContents[0].style.display = 'block';
-        }
-
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const targetTab = this.dataset.tab;
-
-                // Update active tab button
-                tabButtons.forEach(tab => tab.classList.remove('active'));
-                this.classList.add('active');
-
-                // Show/hide tab contents
-                tabContents.forEach(content => {
-                    if (content.id === `${targetTab}-tab`) {
-                        content.style.display = 'block';
-                    } else {
-                        content.style.display = 'none';
-                    }
-                });
-
-                // Initialize Lucide icons for new tab
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
-            });
-        });
-    }
 
     // Sidebar-based navigation (Member Settings)
     if (navItems.length > 0 && sections.length > 0) {
